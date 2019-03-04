@@ -1,8 +1,11 @@
 {
+    "port": "8123",
     "log": {
         "debug": true,
         "info": true,
         "warn": true,
         "error": true
-    }
+    },
+    "routePath": "routes",
+    "staticPath": "static"
 }

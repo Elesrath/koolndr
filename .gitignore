@@ -69,3 +69,6 @@ fabric.properties
 
 # Node stuff
 node_modules/
+
+# OXS
+.DS_Store
