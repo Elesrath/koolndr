@@ -1,0 +1,25 @@
+{
+  "name": "koolndr",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "./app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Elesrath/koolndr.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Elesrath/koolndr/issues"
+  },
+  "homepage": "https://github.com/Elesrath/koolndr#readme",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "node-sass": "^4.11.0"
+  }
+}

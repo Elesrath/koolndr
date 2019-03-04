@@ -1,0 +1,8 @@
+{
+    "log": {
+        "debug": true,
+        "info": true,
+        "warn": true,
+        "error": true
+    }
+}
