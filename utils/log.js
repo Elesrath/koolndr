@@ -90,6 +90,18 @@ function logToFatal(...messages) {
 }
 
 /**
+ * Log db messages
+ * @function logToDB
+ * @memberof utils.log
+ * @param {...string} [messages] - the message(s) to log
+ */
+function logToDB(...messages) {
+    if (conf.log.db && messages.length) {
+        printWithPrefix(process.stdout, '\x1b[34m[DBASE] \x1b[0m', ...messages);
+    }
+}
+
+/**
  * @namespace utils.log
  */
 module.exports = {
@@ -97,5 +109,6 @@ module.exports = {
     info: logToInfo,
     warn: logToWarn,
     error: logToError,
-    fatal: logToFatal
+    fatal: logToFatal,
+    db: logToDB
 };

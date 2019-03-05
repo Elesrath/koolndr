@@ -4,8 +4,14 @@
         "debug": true,
         "info": true,
         "warn": true,
-        "error": true
+        "error": true,
+        "db": true
     },
     "routePath": "routes",
-    "staticPath": "static"
+    "staticPath": "static",
+    "db": {
+        "user": "koolndur",
+        "socket": "/tmp/mysql.sock",
+        "database": "koolndur"
+    }
 }

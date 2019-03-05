@@ -14,6 +14,7 @@ const express = require('express');
 const conf = require(`${__rootname}/conf.json`);
 const log = require(`${__rootname}/utils/log.js`);
 const route = require(`${__rootname}/utils/route.js`);
+const db = require(`${__rootname}/utils/db.js`);
 
 function main() {
     log.info('Starting Koolndur!');
@@ -29,8 +30,20 @@ function main() {
     log.info('Loading routes...');
     let routes = route.load(app);
 
-    log.info(`Setup complete. Listening on ${conf.port}`);
-    app.listen(conf.port);
+    // set up db
+    log.info('Connecting to database...');
+    db.getDB((err, dbConnection) => {
+        if (err) {
+            log.fatal(err);
+            return;
+        }
+
+        app.locals.db = dbConnection;
+        log.info('Connected');
+
+        log.info(`Setup complete. Listening on ${conf.port}`);
+        app.listen(conf.port);
+    });
 }
 
 // start it up!
