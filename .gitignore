@@ -70,5 +70,8 @@ fabric.properties
 # Node stuff
 node_modules/
 
-# OXS
+# OSX
 .DS_Store
+
+# Database stuff
+credentials.json
