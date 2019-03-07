@@ -1,5 +1,6 @@
 /**
  * Routes for serving static (css, js, img, etc) files
+ * @note: this is 00 because it needs to be loaded BEFORE the _01_authentication routes
  */
 
 const express = require('express');

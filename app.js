@@ -10,6 +10,8 @@
 global.__rootname = __dirname;
 
 const express = require('express');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 const conf = require(`${__rootname}/conf.json`);
 const log = require(`${__rootname}/utils/log.js`);
@@ -21,6 +23,12 @@ function main() {
     let app = express();
 
     // express configuration
+    app.use(bodyParser.urlencoded({
+        extended: false
+    }));
+    app.use(bodyParser.json());
+    app.use(cookieParser());
+
     app.set('case sensitive routing', false);
     app.set('strict routing', false);
     app.set('views', `${__rootname}/views`);

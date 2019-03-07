@@ -13,5 +13,9 @@
         "user": "koolndur",
         "socket": "/tmp/mysql.sock",
         "database": "koolndur"
-    }
+    },
+    "encryption": {
+        "rounds": 10
+    },
+    "sessionLength": 3600
 }

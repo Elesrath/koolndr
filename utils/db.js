@@ -3,7 +3,6 @@
  */
 
 const mysql = require('mysql');
-const util = require('util');
 
 const conf = require(`${__rootname}/conf.json`);
 const credentials = require(`${__rootname}/credentials.json`);
@@ -46,7 +45,7 @@ function getDB(cb) {
             }
 
             connection._internalConnection.query(query, esc, (err, rows) => {
-                log.db(`${Date.now() - start}ms; ${query} ${util.inspect(esc)}`);
+                log.db(`Query time: ${Date.now() - start}ms`, `Query: ${query}`, esc);
                 callback(err, rows);
             });
         };
