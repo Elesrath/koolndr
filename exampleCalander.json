@@ -1,0 +1,17 @@
+{
+  "name": "Test Calendar",
+  "calendarID": "1234",
+  "owner": "userID",
+  "events":
+  [
+    {
+      "eventID": "...",
+      "name": "Event name",
+      "startTime": 0,
+      "endTime": 1,
+      "description": "Blah, Blah",
+      "owner": "USERID",
+      "editors": ["userID1", "userID2"]
+    }
+  ]
+}
