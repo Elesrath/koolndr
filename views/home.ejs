@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+    <%- include('common/headStuff.ejs'); %>
+    <body>
+        <%- include('common/userData.ejs', {user: app.locals.user}); %>
+        <pre>
+            <%= app.locals.user.toJSON() %>
+        </pre>
+    </body>
+</html>

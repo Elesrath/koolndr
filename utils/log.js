@@ -97,7 +97,7 @@ function logToFatal(...messages) {
  */
 function logToDB(...messages) {
     if (conf.log.db && messages.length) {
-        printWithPrefix(process.stdout, '\x1b[34m[DBASE] \x1b[0m', ...messages);
+        printWithPrefix(process.stdout, '\x1b[36m[DBASE] \x1b[0m', ...messages);
     }
 }
 
