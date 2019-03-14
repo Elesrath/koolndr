@@ -76,4 +76,4 @@ node_modules/
 # Database stuff
 credentials.json
 
-.log
+*.log
