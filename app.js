@@ -18,7 +18,8 @@ const log = require(`${__rootname}/utils/log.js`);
 const route = require(`${__rootname}/utils/route.js`);
 const db = require(`${__rootname}/utils/db.js`);
 
-function main() {
+function main()
+{
     log.info('Starting Koolndur!');
     let app = express();
 
@@ -40,8 +41,10 @@ function main() {
 
     // set up db
     log.info('Connecting to database...');
-    db.getDB((err, dbConnection) => {
-        if (err) {
+    db.getDB((err, dbConnection) =>
+    {
+        if (err)
+        {
             log.fatal(err);
             return;
         }

@@ -23,7 +23,7 @@ function handleLoginPage(req, res, next) {
         req: req
     });
     next();
-};
+}
 
 /**
  * Handle a POST to the login page
