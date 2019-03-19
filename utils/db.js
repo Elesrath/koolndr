@@ -82,9 +82,21 @@ function getDB(cb)
     }
 }
 
-function getUser()
+function addCalendar(db, name, ownerID, cb)
 {
-
+    let self = this;
+    self.db = db;
+    self.db.query(`INSERT INTO calendars(ownerID, name) VALUES(?,?)`, [ownerID, name], (err) =>
+    {
+        if (err)
+        {
+            cb(err, false);
+        }
+        else
+        {
+            cb(null, true);
+        }
+    });
 }
 
 /**
