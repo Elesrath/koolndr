@@ -22,6 +22,15 @@ function loadRoutes(app) {
 
     (function descend(path) {
         let dir = fs.readdirSync(path, {withFileTypes: true});
+        dir.sort(function(a, b) {
+            if (a.name < b.name) {
+                return -1;
+            } else if (a.name > b.name) {
+                return 1;
+            }
+            return 0;
+        });
+
         for (let file of dir) {
             if (file.isDirectory()) {
                 descend(`${path}/${file.name}`);
