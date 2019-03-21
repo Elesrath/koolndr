@@ -31,15 +31,7 @@ function User(db)
      */
     self.init = function (id, cb)
     {
-        self.db.query(`
-            SELECT uuid,
-                username,
-                email
-            FROM users
-            WHERE uuid = ?
-            LIMIT 1;`, [
-            id
-        ], (err, row) =>
+        self.db.query(`SELECT uuid, username, email FROM users WHERE uuid = ? LIMIT 1;`, [id], (err, row) =>
         {
             if (err)
             {
