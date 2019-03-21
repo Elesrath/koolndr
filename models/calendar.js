@@ -69,8 +69,84 @@ function addCalendar(db, name, ownerID, cb)
 }
 
 /**
+ * Gets a list of all calendars that the given uuid can edit/view
+ * @param db initialized database connection
+ * @param userID uuid of user
+ * @param edit if true, look for all calendars that user can edit. If false, all that user can view
+ * @param cb callback that returns error messages and results
+ */
+function getCalendars(db, userID, edit,cb)
+{
+    //TODO stub function
+    cb("Stub Function", null);
+}
+
+/**
+ * Returns any events that occur on the given calendar within 42 days of startDate (inclusive). This is sufficient to
+ * display one month on the calendar (6 rows * 7 columns), plus enough of the previous and next months to fill in the
+ * gaps on the calendar.
+ *
+ * Will return a json object of a full calendar month. For example, for March 2019, the start date would be Feb 24th,
+ * and the calendar would cover until April 6th (inclusive). For example, see below function
+ * @param db initialized database connection
+ * @param startDate date to be displayed in the top-left cell of the calendar page. Will return events within 42 days
+ * @param calendarID calendar to gather events from
+ * @param userID uuid of user who can view the calendar
+ * @param cb callback returns json with all events
+ */
+function getCalendarMonth(db, startDate, calendarID, userID, cb)
+{
+    //TODO stub function
+    cb("Stub Function", null);
+}
+
+/*
+result = {
+    "monthTitle": "March 2019",
+    "days":
+        [
+            {
+                "day": "24",
+                "month": "Feb",
+                "events":
+                    [
+
+                    ]
+            },
+            {
+                "day": "25",
+                "month": "Feb",
+                "events":
+                    [
+
+                    ]
+            },
+            {
+                "day": "26",
+                "month": "Feb",
+                "events":
+                    [
+
+                    ]
+            },
+            ...
+                {
+                    "day": "6",
+                    "month": "Apr",
+                    "events":
+                        [
+
+                        ]
+                }
+        ]
+};
+*/
+
+/**
  * @namespace models.calendar
  */
 module.exports = {
     addCalendar: addCalendar,
+    getCalendars: getCalendars,
+    getCalendarMonth: getCalendarMonth
 };
