@@ -18,7 +18,10 @@ const log = require(`${__rootname}/utils/log.js`);
 const route = require(`${__rootname}/utils/route.js`);
 const db = require(`${__rootname}/utils/db.js`);
 
-function main() {
+const calendar = require(`${__rootname}/models/calendar.js`);
+
+function main()
+{
     log.info('Starting Koolndur!');
     let app = express();
 
@@ -40,8 +43,10 @@ function main() {
 
     // set up db
     log.info('Connecting to database...');
-    db.getDB((err, dbConnection) => {
-        if (err) {
+    db.getDB((err, dbConnection) =>
+    {
+        if (err)
+        {
             log.fatal(err);
             return;
         }
@@ -51,6 +56,25 @@ function main() {
 
         log.info(`Setup complete. Listening on ${conf.port}`);
         app.listen(conf.port);
+
+        //TODO remove me once my purpose as an example is no more :(
+        //Test of AddCalendar
+        calendar.addCalendar(app.locals.db, "TestyMcTestFace", "123", (err, success) =>
+        {
+            if(err)
+            {
+                log.debug("An error occurred in test call of addCalendar");
+                log.debug(err);
+            }
+            if(success)
+            {
+                log.debug("Add Calendar called successfully");
+            }
+            else
+            {
+                log.debug("Add Calendar failed");
+            }
+        });
     });
 }
 

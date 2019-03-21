@@ -20,8 +20,10 @@ let connection;
  * @param {function} cb- callback that takes err and the wrapped db connection
  * @returns {WrappedDBConnection}
  */
-function getDB(cb) {
-    if (typeof connection === 'undefined') {
+function getDB(cb)
+{
+    if (typeof connection === 'undefined')
+    {
         let options = {
             user: conf.db.user,
             password: credentials.db,
@@ -35,16 +37,19 @@ function getDB(cb) {
             _internalConnection: mysql.createConnection(options)
         };
 
-        connection.query = function(query, esc, callback) {
+        connection.query = function (query, esc, callback)
+        {
             let start = Date.now();
 
             // if there is no escaped values and a callback was passed
-            if (typeof esc === 'function') {
+            if (typeof esc === 'function')
+            {
                 callback = esc;
                 esc = [];
             }
 
-            connection._internalConnection.query(query, esc, (err, rows) => {
+            connection._internalConnection.query(query, esc, (err, rows) =>
+            {
                 log.db(`Query time: ${Date.now() - start}ms`, `Query: ${query}`, esc);
                 callback(err, rows);
             });
@@ -53,20 +58,25 @@ function getDB(cb) {
         connection.format = mysql.format;
 
         // connect to the db
-        connection._internalConnection.connect((err) => {
-            if (err) {
+        connection._internalConnection.connect((err) =>
+        {
+            if (err)
+            {
                 cb(err);
                 return;
             }
 
-            if (connection._internalConnection.state !== 'authenticated') {
+            if (connection._internalConnection.state !== 'authenticated')
+            {
                 cb(new Error(`Invalid connection state: ${connection._internalConnection.state}`));
                 return;
             }
 
             cb(null, connection);
         });
-    } else {
+    }
+    else
+    {
         cb(null, connection);
         return;
     }

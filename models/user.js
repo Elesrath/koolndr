@@ -10,7 +10,8 @@ const log = require(`${__rootname}/utils/log.js`);
  * @memberof models.user
  * @param {WrappedDBConnection} db - the connected database
  */
-function User(db) {
+function User(db)
+{
     // capture context
     let self = this;
 
@@ -28,31 +29,29 @@ function User(db) {
      * @param {string} id - the uuid of the user to grab data for
      * @callback cb - a callback taking (err, success)
      */
-    self.init = function(id, cb) {
-        self.db.query(`
-            SELECT uuid,
-                username,
-                email
-            FROM users
-            WHERE uuid = ?
-            LIMIT 1;`, [
-            id
-        ], (err, row) => {
-            if (err) {
+    self.init = function (id, cb)
+    {
+        self.db.query(`SELECT uuid, username, email FROM users WHERE uuid = ? LIMIT 1;`, [id], (err, row) =>
+        {
+            if (err)
+            {
                 cb(err);
                 return;
             }
 
-            if (row) {
+            if (row)
+            {
                 self.id = row[0].uuid;
                 self.username = row[0].username;
                 self.email = row[0].email;
                 cb(null, true);
-            } else {
+            }
+            else
+            {
                 cb(null, false);
             }
         });
-    }
+    };
 
     /**
      * Serialize data into a JSON string
@@ -60,7 +59,8 @@ function User(db) {
      * @memberof models.user.User
      * @returns {string} the JSON representation of this user
      */
-    self.toJSON = function() {
+    self.toJSON = function ()
+    {
         return JSON.stringify({
             id: self.id,
             username: self.username,
@@ -77,16 +77,23 @@ function User(db) {
  * @param {string} id - the user id
  * @callback cb - a callback taking (user)
  */
-function getUserById(db, id, cb) {
+function getUserById(db, id, cb)
+{
     let user = new User(db);
-    user.init(id, (err, ok) => {
-        if (err) {
+    user.init(id, (err, ok) =>
+    {
+        if (err)
+        {
             log.error(err);
             cb(null);
-        } else if (!ok) {
+        }
+        else if (!ok)
+        {
             log.warn('GetUserById could not find the user');
             cb(null);
-        } else {
+        }
+        else
+        {
             cb(user);
         }
     });
