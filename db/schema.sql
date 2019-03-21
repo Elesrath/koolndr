@@ -25,6 +25,7 @@ CREATE TABLE `sessioncookie` (
 CREATE TABLE `calendars` (
   `calendarID` INT(4) NOT NULL AUTO_INCREMENT,
   `ownerID` CHAR(36) NOT NULL,
+  `name` CHAR(36) NOT NULL,
   PRIMARY KEY (`calendarID`),
   UNIQUE INDEX `calendarID_UNIQUE` (`calendarID` ASC),
   CONSTRAINT `CUserID`
