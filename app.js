@@ -59,7 +59,7 @@ function main()
 
         //TODO remove me once my purpose as an example is no more :(
         //Test of AddCalendar
-        calendar.addCalendar(app.locals.db, "TestyMcTestFace", "123", (err, success) =>
+        calendar.addCalendar(app.locals.db, "TestCalendar2", "e8494d9d-0ece-44ff-9ee4-531f82909b64", (err, success) =>
         {
             if(err)
             {
