@@ -27,7 +27,8 @@ CREATE TABLE `calendars` (
   `ownerID` CHAR(36) NOT NULL,
   `name` CHAR(36) NOT NULL,
   PRIMARY KEY (`calendarID`),
-  UNIQUE INDEX `calendarID_UNIQUE` (`calendarID` ASC),
+  UNIQUE KEY `calendarID_UNIQUE` (`calendarID`),
+  UNIQUE KEY `calendar_name_UNIQUE` (`name`),
   CONSTRAINT `CUserID`
     FOREIGN KEY (ownerID)
     REFERENCES `users` (uuid)
@@ -37,7 +38,7 @@ CREATE TABLE `calendars` (
 CREATE TABLE `canViewEdit` (
   `calendarID` INT(4) NOT NULL,
   `userID` CHAR(36) NOT NULL,
-  `canEdit` TINYINT(1) NOT NULL,
+  `canEdit` BOOLEAN NOT NULL,
   PRIMARY KEY (`calendarID`, `userID`),
   CONSTRAINT `CVECalID`
 	FOREIGN KEY (`calendarID`)
@@ -56,7 +57,7 @@ CREATE TABLE `events` (
   `startDate` DATETIME NOT NULL,
   `endDate` DATETIME NOT NULL,
   `eventName` VARCHAR(100) NOT NULL,
-  `eventDescriptionPath` VARCHAR(256) NOT NULL,
+  `eventDescription` VARCHAR(256) NOT NULL,
   PRIMARY KEY (`eventID`),
   CONSTRAINT `ECalID`
 	FOREIGN KEY (`calendarID`)
@@ -74,3 +75,5 @@ INSERT INTO `users` (`uuid`, `username`, `password`, `email`, `userType`) VALUES
         'admin@localhost',
         0
     );
+
+INSERT INTO `calendars` (`ownerID`, `name`) VALUES ('e8494d9d-0ece-44ff-9ee4-531f82909b64', 'TestyMcTestface');
