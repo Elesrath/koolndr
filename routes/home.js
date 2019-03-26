@@ -12,7 +12,7 @@
   * @param {function} next - the next routing handler
   */
 function handleHomePage(req, res, next) {
-    res.render('home', {
+    res.render('mainCalendarPage', {
         app: this,
         req: req
     });
