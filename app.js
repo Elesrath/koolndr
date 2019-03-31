@@ -102,6 +102,21 @@ function main()
                                     else
                                     {
                                         log.debug(result[0]);
+                                        calendar.getOwnedCalendars(app.locals.db, testUserID, (err, res) =>
+                                        {
+                                            if(err)
+                                            {
+                                                log.debug(err);
+                                            }
+                                            else if(res)
+                                            {
+                                                log.debug(res)
+                                            }
+                                            else
+                                            {
+                                                log.debug("There are no owned calendars for user " + testUserID);
+                                            }
+                                        });
                                     }
                                 });
                             }
