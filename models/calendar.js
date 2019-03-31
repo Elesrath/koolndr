@@ -46,26 +46,40 @@ calendar.addCalendar(app.locals.db, "TestyMcTestFace", "123", (err, success) =>
 function addCalendar(db, name, ownerID, cb)
 {
     log.debug("Adding Calendar with:\nname: " + name + "\nownerID: " + ownerID);
-
-    //TODO check to make sure user is a primary user first!
-    //TODO sanitize input
-
-    db.query(`INSERT INTO calendars(ownerID, name) VALUES(?,?)`, [ownerID, name], (err) =>
+    db.query(`
+    SELECT 1
+    FROM users
+    WHERE uuid = ? AND userType = 1`, [ownerID], (err, row) =>
     {
-        if (err)
+        if(err)
         {
-
-            if(err.sqlMessage.includes("a foreign key constraint fails"))
-            {
-                log.debug("addCalendar called with suspected bad uuid");
-            }
-            cb(err.sqlMessage, false);
+            cb(err.sqlMessage);
+        }
+        else if(!row[0])
+        {
+            cb("Error: User " + ownerID + " is not a premium user and therefore cannot create calendars");
         }
         else
         {
-            cb(null, true);
+            db.query(`INSERT INTO calendars(ownerID, name) VALUES(?,?)`, [ownerID, name], (err) =>
+            {
+                if (err)
+                {
+
+                    if(err.sqlMessage.includes("a foreign key constraint fails"))
+                    {
+                        log.debug("addCalendar called with suspected bad uuid");
+                    }
+                    cb(err.sqlMessage);
+                }
+                else
+                {
+                    cb(null);
+                }
+            });
         }
     });
+
 }
 
 /**
@@ -77,20 +91,23 @@ function addCalendar(db, name, ownerID, cb)
  */
 function getCalendars(db, userID, edit, cb)
 {
+    //TODO untested
     if(edit)
     {
         log.debug("Getting calendars editable by " + userID);
-        db.query(`SELECT calendars.calendarID, calendars.name FROM calendars, canViewEdit WHERE calendars.ownerID = ? OR
-         calendars.calendarID = canViewEdit.calendarID AND canViewEdit.canEdit = TRUE AND canViewEdit.userID = ?`, [userID, userID], (err, res) =>
+        db.query(`
+        SELECT calendars.calendarID, calendars.name 
+        FROM calendars, canViewEdit 
+        WHERE calendars.ownerID = ? 
+        OR calendars.calendarID = canViewEdit.calendarID AND canViewEdit.canEdit = TRUE AND canViewEdit.userID = ?`,
+            [userID, userID], (err, res) =>
         {
             if(err)
             {
-                log.debug(err);
-                cb(err, null);
+                cb(err.sqlMessage, null);
             }
             else
             {
-                log.debug(res);
                 cb(null, res);
             }
         });
@@ -98,83 +115,23 @@ function getCalendars(db, userID, edit, cb)
     else
     {
         log.debug("Getting calendars viewable by " + userID);
-        db.query(`SELECT calendars.calendarID, calendars.name FROM calendars, canViewEdit WHERE
-         calendars.calendarID = canViewEdit.calendarID AND canViewEdit.canEdit = FALSE AND canViewEdit.userID = ?`, [userID], (err, res) =>
+        db.query(`
+        SELECT calendars.calendarID, calendars.name 
+        FROM calendars, canViewEdit 
+        WHERE calendars.calendarID = canViewEdit.calendarID AND canViewEdit.canEdit = FALSE AND canViewEdit.userID = ?`,
+            [userID], (err, res) =>
         {
             if(err)
             {
-                log.debug(err);
-                cb(err, null);
+                cb(err.sqlMessage, null);
             }
             else
             {
-                log.debug(res);
                 cb(null, res);
             }
         });
     }
 }
-
-/**
- * Returns any events that occur on the given calendar within 42 days of startDate (inclusive). This is sufficient to
- * display one month on the calendar (6 rows * 7 columns), plus enough of the previous and next months to fill in the
- * gaps on the calendar.
- *
- * Will return a json object of a full calendar month. For example, for March 2019, the start date would be Feb 24th,
- * and the calendar would cover until April 6th (inclusive). For example, see below function
- * @param db initialized database connection
- * @param startDate date to be displayed in the top-left cell of the calendar page. Will return events within 42 days
- * @param calendarID calendar to gather events from
- * @param userID uuid of user who can view the calendar
- * @param cb callback returns json with all events
- */
-function getCalendarMonth(db, startDate, calendarID, userID, cb)
-{
-    //TODO stub function
-    cb("Stub Function", null);
-}
-
-/*
-result = {
-    "monthTitle": "March 2019",
-    "days":
-        [
-            {
-                "day": "24",
-                "month": "Feb",
-                "events":
-                    [
-
-                    ]
-            },
-            {
-                "day": "25",
-                "month": "Feb",
-                "events":
-                    [
-
-                    ]
-            },
-            {
-                "day": "26",
-                "month": "Feb",
-                "events":
-                    [
-
-                    ]
-            },
-            ...
-                {
-                    "day": "6",
-                    "month": "Apr",
-                    "events":
-                        [
-
-                        ]
-                }
-        ]
-};
-*/
 
 /**
  * The user identified by sharerID grants the user represented by recipientID viewing privileges
@@ -191,17 +148,17 @@ function grantViewPrivileges(db, sharerID, recipientID, calendarID, cb)
     db.query(`INSERT INTO canViewEdit(calendarID, userID, canEdit)
               SELECT ?, ?, FALSE
               FROM canViewEdit, calendars
-              WHERE (calendars.calendarID = ? AND calendars.ownerID = ?) OR (canViewEdit.calendarID = ? AND canViewEdit.userID = ? AND canViewEdit.canEdit = TRUE)`, [calendarID, recipientID, calendarID, sharerID, calendarID, sharerID], (err, res) =>
+              WHERE (calendars.calendarID = ? AND calendars.ownerID = ?) 
+              OR (canViewEdit.calendarID = ? AND canViewEdit.userID = ? AND canViewEdit.canEdit = TRUE)`,
+        [calendarID, recipientID, calendarID, sharerID, calendarID, sharerID], (err) =>
     {
         if(err)
         {
-            log.debug(err);
-            cb(err, false);
+            cb(err.sqlMessage);
         }
         else
         {
-            log.debug(res);
-            cb(null, true);
+            cb(null);
         }
     });
 }
@@ -216,8 +173,24 @@ function grantViewPrivileges(db, sharerID, recipientID, calendarID, cb)
  */
 function revokeViewPrivileges(db, revokerID, targetID, calendarID, cb)
 {
-    //TODO stub function
-    cb("Stub Function", null);
+    //TODO untested
+    log.debug("Revoking View Privileges from " + targetID + " for " + calendarID);
+    db.query(`
+    DELETE FROM canViewEdit 
+    WHERE (calendarID = ? AND userID = ? AND canEdit = FALSE) 
+    AND ((calendars.calendarID = ? AND calendars.ownerID = ?) 
+    OR (calendarID = ? AND userID = ? AND canEdit = TRUE))`,
+        [calendarID, targetID, calendarID, revokerID, calendarID, revokerID], (err, res) =>
+    {
+        if(err)
+        {
+            cb(err.sqlMessage);
+        }
+        else
+        {
+            cb(null);
+        }
+    });
 }
 
 /**
@@ -239,13 +212,11 @@ function grantEditPrivileges(db, ownerID, recipientID, calendarID, cb)
     {
         if(err)
         {
-            log.debug(err);
-            cb(err, false);
+            cb(err.sqlMessage);
         }
         else
         {
-            log.debug(res);
-            cb(null, true);
+            cb(null);
         }
     });
 }
@@ -279,14 +250,29 @@ function updateCalendar(db, calendarID, ownerID, name, cb)
 }
 
 /**
+ * Remove selected calendar
+ * @param db initialized database connection
+ * @param calendarID calendar to remove
+ * @param ownerID owner of calendar
+ * @param cb callback
+ */
+function removeCalendar(db, calendarID, ownerID, cb)
+{
+    //TODO stub function
+    cb("Stub Function", null);
+}
+
+/**
  * @namespace models.calendar
  */
 module.exports = {
     addCalendar: addCalendar,
     getCalendars: getCalendars,
-    getCalendarMonth: getCalendarMonth,
     grantViewPrivileges: grantViewPrivileges,
     grantEditPrivileges: grantEditPrivileges,
     revokeViewPrivileges: revokeViewPrivileges,
-    revokeEditPrivileges: revokeEditPrivileges
+    revokeEditPrivileges: revokeEditPrivileges,
+    updateCalendar: updateCalendar,
+    removeCalendar: removeCalendar
+
 };
