@@ -84,12 +84,13 @@ function createUser(db, username, password, email, cb) {
                 return;
             }
 
-            let id = uuid();
-            db.query('INSERT INTO users (uuid, username, password, email) VALUES (?, ?, ?, ?);', [
+            let id = uuid(); //UserType: 0 = non-premium, 1 = premium
+            db.query('INSERT INTO users (uuid, username, password, email, userType) VALUES (?, ?, ?, ?, ?);', [
                 id,
                 username.toLowerCase(),
                 hash,
-                email
+                email,
+                1
             ], (err) => {
                 if (err) {
                     cb(err);
