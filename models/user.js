@@ -10,6 +10,8 @@ const log = require(`${__rootname}/utils/log.js`);
  * @memberof models.user
  * @param {WrappedDBConnection} db - the connected database
  */
+
+//UserType: 0 = non-premium, 1 = premium
 function User(db)
 {
     // capture context
@@ -100,9 +102,33 @@ function getUserById(db, id, cb)
 }
 
 /**
+ * Change user to type (premium or ordinary)
+ * @param db initialized database connection
+ * @param userID user to update
+ * @param newType new type of user; 0 for ordinary, or 1 for premium
+ * @param cb callback
+ */
+function changeUserType(db, userID, newType, cb)
+{
+    log.debug("Changing user " + userID + " to type " + newType);
+    db.query(`UPDATE users SET userType = ? WHERE uuid = ?`, [newType, userID], (err) =>
+    {
+        if(err)
+        {
+            cb(err.sqlMessage);
+        }
+        else
+        {
+            cb(null);
+        }
+    });
+}
+
+/**
  * @namespace models.user
  */
 module.exports = {
     User: User,
-    getUserById: getUserById
+    getUserById: getUserById,
+    changeUserType: changeUserType
 };
