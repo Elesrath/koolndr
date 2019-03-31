@@ -83,54 +83,130 @@ function addCalendar(db, name, ownerID, cb)
 }
 
 /**
- * Gets a list of all calendars that the given uuid can edit/view
+ * Get all calendars owned by userID
  * @param db initialized database connection
- * @param userID uuid of user
- * @param edit if true, look for all calendars that user can edit. If false, all that user can view
- * @param cb callback that returns error messages and results
+ * @param userID user to check for ownership
+ * @param cb callback
  */
-function getCalendars(db, userID, edit, cb)
+function getOwnedCalendars(db, userID, cb)
 {
-    //TODO untested
-    if(edit)
+    db.query(`
+    SELECT 1
+    FROM users
+    WHERE uuid = ? AND userType = 1`,
+        [userID], (err, row) =>
     {
-        log.debug("Getting calendars editable by " + userID);
-        db.query(`
-        SELECT calendars.calendarID, calendars.name 
-        FROM calendars, canViewEdit 
-        WHERE calendars.ownerID = ? 
-        OR calendars.calendarID = canViewEdit.calendarID AND canViewEdit.canEdit = TRUE AND canViewEdit.userID = ?`,
-            [userID, userID], (err, res) =>
+        if(err)
         {
-            if(err)
+            cb(err.sqlMessage, null);
+        }
+        else if(!row[0]) //User is not premium
+        {
+            cb(null, null);
+        }
+        else
+        {
+            db.query(`
+            SELECT calendarID, name
+            FROM calendars
+            WHERE ownerID = ?`,
+                [userID], (err, result) =>
             {
-                cb(err.sqlMessage, null);
-            }
-            else
-            {
-                cb(null, res);
-            }
-        });
-    }
-    else
+                if(err)
+                {
+                    cb(err.sqlMessage, null);
+                }
+                else if(!result[0]) //User has no premium calendars
+                {
+                    cb(null, null);
+                }
+                else
+                {
+                    cb(null, result);
+                }
+            });
+        }
+    });
+}
+
+/**
+ * Get all calendars viewable by userID. Note that this does not include calendars that userID owns or can edit
+ * @param db initialized database connection
+ * @param userID userId to search for
+ * @param cb callback
+ */
+function getViewableCalendars(db, userID, cb)
+{
+    db.query(`
+    SELECT calendars.calendarID, calendars.name
+    FROM calendars
+    INNER JOIN canViewEdit
+    ON calendars.calendarID = canViewEdit.calendarID
+    WHERE canViewEdit.userID = ? AND canViewEdit.canEdit = FALSE`,
+        [userID], (err, row) =>
     {
-        log.debug("Getting calendars viewable by " + userID);
-        db.query(`
-        SELECT calendars.calendarID, calendars.name 
-        FROM calendars, canViewEdit 
-        WHERE calendars.calendarID = canViewEdit.calendarID AND canViewEdit.canEdit = FALSE AND canViewEdit.userID = ?`,
-            [userID], (err, res) =>
+        if(err)
         {
-            if(err)
+            cb(err.sqlMessage, null);
+        }
+        else if(!row[0]) //There are no viewable calendars
+        {
+            cb(null, null);
+        }
+        else
+        {
+            cb(null, row);
+        }
+    });
+}
+
+/**
+ * Get all calendars editable by userID. Note that this does not include calendars that userID owns or can view
+ * @param db initialized database connection
+ * @param userID userId to search for
+ * @param cb callback
+ */
+function getEditableCalendars(db, userID, cb)
+{
+    db.query(`
+    SELECT 1
+    FROM users
+    WHERE uuid = ? AND userType = 1`,
+        [userID], (err, row) =>
+    {
+        if (err)
+        {
+            cb(err.sqlMessage, null);
+        }
+        else if (!row[0]) //User is not premium
+        {
+            cb(null, null);
+        }
+        else
+        {
+            db.query(`
+            SELECT calendars.calendarID, calendars.name
+            FROM calendars
+            INNER JOIN canViewEdit
+            ON calendars.calendarID = canViewEdit.calendarID
+            WHERE canViewEdit.userID = ? AND canViewEdit.canEdit = TRUE`,
+                [userID], (err, row) =>
             {
-                cb(err.sqlMessage, null);
-            }
-            else
-            {
-                cb(null, res);
-            }
-        });
-    }
+                if (err)
+                {
+                    cb(err.sqlMessage, null);
+                }
+                else if (!row[0]) //There are no editable calendars
+                {
+                    cb(null, null);
+                }
+                else
+                {
+                    cb(null, row);
+                }
+            });
+        }
+    });
 }
 
 /**
@@ -267,7 +343,9 @@ function removeCalendar(db, calendarID, ownerID, cb)
  */
 module.exports = {
     addCalendar: addCalendar,
-    getCalendars: getCalendars,
+    getOwnedCalendars: getOwnedCalendars,
+    getViewableCalendars: getViewableCalendars,
+    getEditableCalendars: getEditableCalendars,
     grantViewPrivileges: grantViewPrivileges,
     grantEditPrivileges: grantEditPrivileges,
     revokeViewPrivileges: revokeViewPrivileges,
