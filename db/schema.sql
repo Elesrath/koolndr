@@ -73,7 +73,7 @@ INSERT INTO `users` (`uuid`, `username`, `password`, `email`, `userType`) VALUES
         'admin',
         '$2b$10$xJfSYMelZj0RhPAUdNF6qO9e6wEy6rRaAfFuGAF/NbXILLYTpM29m', -- backdoor
         'admin@localhost',
-        0
+        1
     );
 
 INSERT INTO `calendars` (`ownerID`, `name`) VALUES ('e8494d9d-0ece-44ff-9ee4-531f82909b64', 'TestyMcTestface');
