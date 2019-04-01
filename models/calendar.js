@@ -219,7 +219,8 @@ function getEditableCalendars(db, userID, cb)
  */
 function grantViewPrivileges(db, sharerID, recipientID, calendarID, cb)
 {
-    //TODO untested
+    //TODO stub function
+    /*
     log.debug("Granting view privileges to " + recipientID + " by " + sharerID + " to calendar " + calendarID);
     db.query(`INSERT INTO canViewEdit(calendarID, userID, canEdit)
               SELECT ?, ?, FALSE
@@ -237,6 +238,8 @@ function grantViewPrivileges(db, sharerID, recipientID, calendarID, cb)
             cb(null);
         }
     });
+    */
+    cb("Stub function");
 }
 
 /**
@@ -249,7 +252,9 @@ function grantViewPrivileges(db, sharerID, recipientID, calendarID, cb)
  */
 function revokeViewPrivileges(db, revokerID, targetID, calendarID, cb)
 {
-    //TODO untested
+    //TODO stub function
+    //This almost certainly doesn't work!
+    /*
     log.debug("Revoking View Privileges from " + targetID + " for " + calendarID);
     db.query(`
     DELETE FROM canViewEdit 
@@ -267,6 +272,9 @@ function revokeViewPrivileges(db, revokerID, targetID, calendarID, cb)
             cb(null);
         }
     });
+
+     */
+    cb("Stub function");
 }
 
 /**
@@ -279,7 +287,9 @@ function revokeViewPrivileges(db, revokerID, targetID, calendarID, cb)
  */
 function grantEditPrivileges(db, ownerID, recipientID, calendarID, cb)
 {
-    //TODO untested
+    //TODO stub function
+    //This almost certainly doesn't work
+    /*
     log.debug("Granting edit privileges to " + recipientID + " by " + ownerID + " to calendar " + calendarID);
     db.query(`INSERT INTO canViewEdit(calendarID, userID, canEdit)
               SELECT ?, ?, TRUE
@@ -295,6 +305,9 @@ function grantEditPrivileges(db, ownerID, recipientID, calendarID, cb)
             cb(null);
         }
     });
+
+     */
+    cb("Stub function");
 }
 
 /**
