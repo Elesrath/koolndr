@@ -351,6 +351,8 @@ function removeCalendar(db, calendarID, ownerID, cb)
     cb("Stub Function", null);
 }
 
+//
+
 /**
  * @namespace models.calendar
  */

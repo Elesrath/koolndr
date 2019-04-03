@@ -21,49 +21,8 @@
 
         <script src='/fullcalendar/core/main.js'></script>
         <script src='/fullcalendar/daygrid/main.js'></script>
-        <script src='fullcalendar/interaction/main.js'></script>
-        <script src='fullcalendar/bootstrap/main.js'></script>
-
-        <script>
-            function handleCalendarNavClick(id){
-                alert("handleCalendarNavClick: "+id);
-            }
-
-            document.addEventListener('DOMContentLoaded', function() {
-                let calendarEl = document.getElementById('calendar');
-
-                let calendar = new FullCalendar.Calendar(calendarEl, {
-                    plugins: [ 'dayGrid' , 'interaction', 'bootstrap'],
-                    defaultView: 'dayGridMonth',
-                    height: 'parent',
-                    customButtons: {
-                        editButton: {
-                            text: 'Edit',
-                            click: function() {
-                                alert('clicked edit');
-                            }
-                        },
-                        shareButton: {
-                            text: 'Share',
-                            click: function() {
-                                alert('clicked share');
-                            }
-                        }
-                    },
-                    header: {
-                        left: 'editButton, shareButton',
-                        center: 'title',
-                        right: 'today prev,next',
-                    },
-                    dateClick: function(info) {
-                        alert('Clicked on: ' + info.dateStr);
-                    },
-                });
-
-                calendar.render();
-            });
-
-        </script>
+        <script src='/fullcalendar/interaction/main.js'></script>
+        <script src='/fullcalendar/bootstrap/main.js'></script>
     </head>
     <body id="page-top">
 
@@ -102,12 +61,8 @@
 
         <!-- Sidebar -->
         <ul class="sidebar navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="#" id="calendar1" onclick="handleCalendarNavClick(this.id);return false;">
-                    <i class="fas fa-fw fa-calendar-alt"></i>
-                    <span>Calendar Example</span>
-                </a>
-                <a class="nav-link" href="#" id="addNewCalendar" onclick="handleCalendarNavClick(this.id);return false;">
+            <li id="navBar" class="nav-item">
+                <a class="nav-link" href="#" id="addNewCalendar" data-toggle="modal" data-target="#addNewCalendarModal">
                     <i class="fas fa-fw fa-calendar-plus"></i>
                     <span>Add Calendar</span>
                 </a>
@@ -135,11 +90,11 @@
     </a>
 
     <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModal" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <h5 class="modal-title">Ready to Leave?</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -148,6 +103,32 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
                     <a class="btn btn-primary" href="login.html">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add New Calendar Modal-->
+    <div class="modal fade" id="addNewCalendarModal" tabindex="-1" role="dialog" aria-labelledby="addNewCalendarModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Calendar</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-label-group">
+                            <input id="calendarNameInput" class="form-control" maxlength="50" required="required" autofocus="autofocus">
+                            <label for="calendarNameInput">Calendar Name</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button id="addNewCalendarButton" class="btn btn-primary" type="submit" onclick="handleAddNewCalendarClick();return false;">Add Calendar</button>
                 </div>
             </div>
         </div>
@@ -163,5 +144,6 @@
     <!-- Custom scripts for all pages-->
     <script src="/startbootstrap-sb-admin-gh-pages/js/sb-admin.min.js"></script>
 
+    <script src="/js/mainCalendarPage.js"></script>
     </body>
 </html>
