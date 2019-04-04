@@ -23,6 +23,7 @@ function User(db)
     self.id = null;
     self.username = null;
     self.email = null;
+    self.userType = null;
 
     /**
      * Initialize data
@@ -33,7 +34,7 @@ function User(db)
      */
     self.init = function (id, cb)
     {
-        self.db.query(`SELECT uuid, username, email FROM users WHERE uuid = ? LIMIT 1;`, [id], (err, row) =>
+        self.db.query(`SELECT uuid, username, email, userType FROM users WHERE uuid = ? LIMIT 1;`, [id], (err, row) =>
         {
             if (err)
             {
@@ -46,6 +47,7 @@ function User(db)
                 self.id = row[0].uuid;
                 self.username = row[0].username;
                 self.email = row[0].email;
+                self.userType = row[0].userType;
                 cb(null, true);
             }
             else
@@ -66,7 +68,8 @@ function User(db)
         return JSON.stringify({
             id: self.id,
             username: self.username,
-            email: self.email
+            email: self.email,
+            userType: self.userType
         });
     }
 }
