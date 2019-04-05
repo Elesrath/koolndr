@@ -334,8 +334,40 @@ function revokeEditPrivileges(db, ownerID, targetID, calendarID, cb)
  */
 function updateCalendar(db, calendarID, ownerID, name, cb)
 {
-    //TODO stub function
-    cb("Stub Function", null);
+    db.query(
+        `SELECT 1
+        FROM users
+        INNER JOIN calendars ON calendars.ownerID = users.uuid
+        WHERE users.uuid = ? AND users.userType = 1 AND calendars.calendarID = ?`,
+        [ownerID, calendarID], (err, row) =>
+        {
+            if(err)
+            {
+                cb(err.sqlMessage);
+            }
+            else if(!row[0])
+            {
+                cb("Error: user does not own calendar, or userId or calendarId does not exist");
+            }
+            else
+            {
+                db.query(
+                    `UPDATE calendars
+                    SET name = ?
+                    WHERE ownerID = ? AND calendarID = ?`,
+                    [name, ownerID, calendarID], (err) =>
+                    {
+                        if(err)
+                        {
+                            cb(err.sqlMessage);
+                        }
+                        else
+                        {
+                            cb(null);
+                        }
+                    });
+            }
+        });
 }
 
 /**
