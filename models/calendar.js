@@ -383,6 +383,8 @@ function removeCalendar(db, calendarID, ownerID, cb)
     });
 }
 
+//
+
 /**
  * @namespace models.calendar
  */

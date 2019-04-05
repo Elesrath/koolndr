@@ -2,6 +2,8 @@
  * Home page routes
  */
 
+const calendar = require(`${__rootname}/models/calendar.js`);
+const log = require(`${__rootname}/utils/log.js`);
 
  /**
   * Handle a GET to the login page
@@ -18,6 +20,26 @@ function handleHomePage(req, res, next) {
     });
 }
 
+function handleGetCalendars(req, res, next){
+    let app = this;
+    calendar.getOwnedCalendars(app.locals.db, app.locals.user.id, (err, calendars) =>
+    {
+        log.debug(calendars);
+        if(err)
+        {
+            log.debug(err);
+        }
+        else if(calendars)
+        {
+            res.send(calendars);
+        }
+        else
+        {
+            log.debug("There are no owned calendars for user " + app.locals.user.id);
+        }
+    });
+}
+
 /**
  * Load the routes in this file
  * @function load
@@ -27,6 +49,7 @@ function handleHomePage(req, res, next) {
 function load(app) {
     app.get('/home', handleHomePage.bind(app));
     app.get('/', handleHomePage.bind(app));
+    app.get('/getCalendars', handleGetCalendars.bind(app));
 }
 
 /**
@@ -34,5 +57,6 @@ function load(app) {
  */
 module.exports = {
     load: load,
-    handleHomePage: handleHomePage
+    handleHomePage: handleHomePage,
+    handleGetCalendars: handleGetCalendars
 };
