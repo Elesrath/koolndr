@@ -2608,20 +2608,20 @@ fieldset:disabled a.btn {
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
+  color: white;
+  background-color: #0087A6;
+  border-color: #00CFFF;
 }
 
 .btn-primary:hover {
-  color: #fff;
-  background-color: #0069d9;
-  border-color: #0062cc;
+  color: white;
+  background-color: #00CFFF;
+  border-color: #00CFFF;
 }
 
 .btn-primary:focus, .btn-primary.focus {
-  -webkit-box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
-  box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
+  -webkit-box-shadow: 0 0 0 0.2rem rgba(0, 135, 166, 0.5);
+  box-shadow: 0 0 0 0.2rem rgba(0, 135, 166, 0.5);
 }
 
 .btn-primary.disabled, .btn-primary:disabled {
@@ -2632,9 +2632,9 @@ fieldset:disabled a.btn {
 
 .btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active,
 .show > .btn-primary.dropdown-toggle {
-  color: #fff;
-  background-color: #0062cc;
-  border-color: #005cbf;
+  color: white;
+  background-color: #0087A6;
+  border-color: #00CFFF;
 }
 
 .btn-primary:not(:disabled):not(.disabled):active:focus, .btn-primary:not(:disabled):not(.disabled).active:focus,
@@ -10486,7 +10486,8 @@ body {
 }
 
 .sidebar {
-  width: 90px !important;
+  width: 110px !important;
+	overflow-wrap: break-word;
   background-color: #212529;
   min-height: calc(100vh - 56px);
 }
@@ -10528,7 +10529,12 @@ body {
 }
 
 .sidebar .nav-item .nav-link:active, .sidebar .nav-item .nav-link:focus, .sidebar .nav-item .nav-link:hover {
-  color: rgba(255, 255, 255, 0.75);
+	color: rgba(255, 255, 255, 0.75);
+}
+
+.sidebar .nav-item .nav-link.custom-link:focus {
+	color: white;
+	background-color: #0087A6;
 }
 
 .sidebar.toggled {
@@ -10538,11 +10544,11 @@ body {
 
 @media (min-width: 768px) {
   .sidebar {
-    width: 225px !important;
+    width: 300px !important;
+		overflow-wrap: break-word;
   }
   .sidebar .nav-item .nav-link {
     display: block;
-    width: 100%;
     text-align: left;
     padding: 1rem;
     width: 225px;
@@ -10560,8 +10566,9 @@ body {
     display: block;
   }
   .sidebar.toggled {
-    overflow: visible;
-    width: 90px !important;
+		width: 125px !important;
+    height: 100vh;
+    overflow-y: auto;
   }
   .sidebar.toggled .nav-item:last-child {
     margin-bottom: 1rem;

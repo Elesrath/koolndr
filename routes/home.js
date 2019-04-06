@@ -20,22 +20,95 @@ function handleHomePage(req, res, next) {
     });
 }
 
-function handleGetCalendars(req, res, next){
+function handleGetOwnCalendars(req, res, next){
     let app = this;
     calendar.getOwnedCalendars(app.locals.db, app.locals.user.id, (err, calendars) =>
     {
-        log.debug(calendars);
         if(err)
         {
             log.debug(err);
         }
-        else if(calendars)
+        else
         {
             res.send(calendars);
         }
+    });
+}
+
+function handleGetEditCalendars(req, res, next){
+    let app = this;
+    calendar.getEditableCalendars(app.locals.db, app.locals.user.id, (err, calendars) =>
+    {
+        if(err)
+        {
+            log.debug(err);
+        }
         else
         {
-            log.debug("There are no owned calendars for user " + app.locals.user.id);
+            res.send(calendars);
+        }
+    });
+}
+
+function handleGetViewCalendars(req, res, next){
+    let app = this;
+    calendar.getViewableCalendars(app.locals.db, app.locals.user.id, (err, calendars) =>
+    {
+        if(err)
+        {
+            log.debug(err);
+        }
+        else
+        {
+            res.send(calendars);
+        }
+    });
+}
+
+function handleAddCalendar(req, res, next){
+    let app = this;
+    calendar.addCalendar(app.locals.db, req.body.name, app.locals.user.id, (err) =>
+    {
+        if(err)
+        {
+            log.debug(err);
+            res.send(err);
+        }
+        else
+        {
+            res.send("success");
+        }
+    });
+}
+
+function handleEditCalendar(req, res, next){
+    let app = this;
+    calendar.updateCalendar(app.locals.db, req.body.id, app.locals.user.id, req.body.name, (result) =>
+    {
+        if(result !== null)
+        {
+            log.debug(result);
+            res.send(result);
+        }
+        else
+        {
+            res.send("success");
+        }
+    });
+}
+
+function handleDeleteCalendar(req, res, next){
+    let app = this;
+    calendar.removeCalendar(app.locals.db, req.body.id, app.locals.user.id, (result) =>
+    {
+        if(result !== null)
+        {
+            log.debug(result);
+            res.send(result);
+        }
+        else
+        {
+            res.send("success");
         }
     });
 }
@@ -49,7 +122,12 @@ function handleGetCalendars(req, res, next){
 function load(app) {
     app.get('/home', handleHomePage.bind(app));
     app.get('/', handleHomePage.bind(app));
-    app.get('/getCalendars', handleGetCalendars.bind(app));
+    app.get('/getOwnCalendars', handleGetOwnCalendars.bind(app));
+    app.get('/getViewCalendars', handleGetEditCalendars.bind(app));
+    app.get('/getEditCalendars', handleGetViewCalendars.bind(app));
+    app.post('/addCalendar', handleAddCalendar.bind(app));
+    app.post('/editCalendar', handleEditCalendar.bind(app));
+    app.post('/deleteCalendar', handleDeleteCalendar.bind(app));
 }
 
 /**
@@ -58,5 +136,10 @@ function load(app) {
 module.exports = {
     load: load,
     handleHomePage: handleHomePage,
-    handleGetCalendars: handleGetCalendars
+    handleGetOwnedCalendars: handleGetOwnCalendars,
+    handleGetEditCalendars: handleGetEditCalendars,
+    handleGetViewCalendars: handleGetViewCalendars,
+    handleAddCalendar: handleAddCalendar,
+    handleEditCalendar: handleEditCalendar,
+    handleDeleteCalendar: handleDeleteCalendar,
 };

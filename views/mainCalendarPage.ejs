@@ -14,15 +14,19 @@
 
         <!-- Custom styles for this template-->
         <link href="/startbootstrap-sb-admin-gh-pages/css/sb-admin.css" rel="stylesheet">
-
         <link href='/fullcalendar/core/main.css' rel='stylesheet' />
         <link href='/fullcalendar/daygrid/main.css' rel='stylesheet' />
         <link href='fullcalendar/bootstrap/main.css' rel='stylesheet' />
+        <link rel="stylesheet" type="text/css" href="/css/mainCalendarPage.css">
+
 
         <script src='/fullcalendar/core/main.js'></script>
         <script src='/fullcalendar/daygrid/main.js'></script>
         <script src='/fullcalendar/interaction/main.js'></script>
         <script src='/fullcalendar/bootstrap/main.js'></script>
+        <script>
+
+        </script>
     </head>
     <body id="page-top">
 
@@ -60,12 +64,23 @@
     <div id="wrapper">
 
         <!-- Sidebar -->
-        <ul class="sidebar navbar-nav">
+        <ul class="sidebar navbar-nav sidebar-scroll">
             <li id="navBar" class="nav-item">
-                <a class="nav-link" href="#" id="addNewCalendar" data-toggle="modal" data-target="#addNewCalendarModal">
-                    <i class="fas fa-fw fa-calendar-plus"></i>
-                    <span>Add Calendar</span>
-                </a>
+                <% if(app.locals.user.userType){ %>
+                    <a class="nav-link" href="#" id="addNewCalendar" data-toggle="modal" data-target="#addNewCalendarModal">
+                        <i class="fas fa-fw fa-calendar-plus"></i>
+                        <span>Add Calendar</span>
+                    </a>
+                <% }%>
+                <div id="calendarsOwn">
+
+                </div>
+                <div id="calendarsEdit">
+
+                </div>
+                <div id="calendarsView">
+
+                </div>
             </li>
         </ul>
 
@@ -134,6 +149,53 @@
         </div>
     </div>
 
+    <!-- Edit Calendar Modal-->
+    <div class="modal fade" id="editCalendarModal" tabindex="-1" role="dialog" aria-labelledby="editCalendarModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Calendar</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-label-group">
+                            <input id="editCalendarNameInput" class="form-control" maxlength="50" required="required" autofocus="autofocus">
+                            <label for="editCalendarNameInput">New Calendar Name</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button id="editCalendarButton" class="btn btn-primary" type="submit" onclick="handleEditCalendarClick();return false;">Edit Calendar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Calendar Modal-->
+    <div class="modal fade" id="deleteCalendarModal" tabindex="-1" role="dialog" aria-labelledby="deleteCalendarModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Calendar</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <body>Deleting a calendar is permanent!</body>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button id="deleteCalendarButton" class="btn btn-primary" type="submit" onclick="handleDeleteCalendarClick();return false;">Delete Calendar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap core JavaScript-->
     <script src="/startbootstrap-sb-admin-gh-pages/vendor/jquery/jquery.min.js"></script>
     <script src="/startbootstrap-sb-admin-gh-pages/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -143,7 +205,7 @@
 
     <!-- Custom scripts for all pages-->
     <script src="/startbootstrap-sb-admin-gh-pages/js/sb-admin.min.js"></script>
-
     <script src="/js/mainCalendarPage.js"></script>
+    
     </body>
 </html>
