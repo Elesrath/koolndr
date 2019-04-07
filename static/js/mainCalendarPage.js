@@ -1,10 +1,10 @@
 let calendar;
 let selectedCalendar;
+let selectedCalendarName = "";
 let calendarsOwn=[];
 let calendarsEdit=[];
 let calendarsView=[];
 let userType = 0;
-
 
 function addCalendar(calendarName, cb){
     $.post( "/addCalendar", {name: calendarName}, function(result) {
@@ -24,21 +24,20 @@ function deleteCalendar(calendarID, cb){
     });
 }
 
-function getOwnCalendars(){
+function getOwnCalendars(cb){
     $.get("/getOwnCalendars", function (calendars) {
         let own = $("#calendarsOwn");
         own.empty();
         calendarsOwn.length = 0;
-        let calendar;
+        let c;
         for(let i = 0; i < calendars.length; i++){
-            calendar = calendars[i];
-            calendar.type = "own";
-            calendarsOwn.push(calendar);
-            own.append('<a class="nav-link custom-link" href="#" id=' +
-                JSON.stringify(calendar) +
+            calendarsOwn.push(calendars[i].name);
+            c = JSON.stringify({index: i, id: calendars[i].calendarID, type: "own"});
+            own.append('<a class="nav-link custom-link" href="#" id=' + c +
                 ' onclick="handleCalendarNavClick(this.id);return false;">' +
-                '<i class="fas fa-fw fa-calendar-alt"></i><span> ' + calendar.name + '</span></a>');
+                '<i class="fas fa-fw fa-calendar-alt"></i><span> ' + calendars[i].name + '</span></a>');
         }
+        cb(true);
     });
 }
 
@@ -47,15 +46,13 @@ function getEditCalendars(){
         let edit = $("#calendarsEdit");
         edit.empty();
         calendarsEdit.length = 0;
-        let calendar;
+        let c;
         for(let i = 0; i < calendars.length; i++){
-            calendar = calendars[i];
-            calendar.type = "edit";
-            calendarsEdit.push(calendar);
-            edit.append('<a class="nav-link custom-link" href="#" id=' +
-                JSON.stringify(calendar) +
+            calendarsEdit.push(calendars[i].name);
+            c = JSON.stringify({index: i, id: calendars[i].calendarID, type: "edit"});
+            edit.append('<a class="nav-link custom-link" href="#" id=' + c +
                 ' onclick="handleCalendarNavClick(this.id);return false;">' +
-                '<i class="fas fa-fw fa-calendar-alt"></i><span> ' + calendar.name + '</span></a>');
+                '<i class="fas fa-fw fa-calendar-alt"></i><span> ' + calendars[i].name + '</span></a>');
         }
     });
 }
@@ -65,24 +62,25 @@ function getViewCalendars(){
         let view = $("#calendarsView");
         view.empty();
         calendarsView.length = 0;
-        let calendar;
+        let c;
         for(let i = 0; i < calendars.length; i++) {
-            calendar = calendars[i];
-            calendar.type = "view";
-            calendarsView.push(calendar);
-            view.append('<a class="nav-link custom-link" href="#" id=' +
-                JSON.stringify(calendar) +
+            calendarsView.push(calendars[i].name);
+            c = JSON.stringify({index: i, id: calendars[i].calendarID, type: "view"});
+            view.append('<a class="nav-link custom-link" href="#" id=' + c +
                 ' onclick="handleCalendarNavClick(this.id);return false;">' +
-                '<i class="fas fa-fw fa-calendar-alt"></i><span> ' + calendar.name + '</span></a>');
+                '<i class="fas fa-fw fa-calendar-alt"></i><span> ' + calendars[i].name + '</span></a>');
         }
     });
 }
 
 function handleCalendarNavClick(id) {
-    //$("#navBar").find("a").css({"backgroundColor": "#212529", "color": "white"});
-    //$("#" + id).not("#addNewCalendar").css({"backgroundColor": "white", "color": "black"});
+    $(".sidebar-selected").removeClass("sidebar-selected");
+    let c = document.getElementById(id);
+    c.classList.add("sidebar-selected");
+
     selectedCalendar = JSON.parse(id);
     if(selectedCalendar.type === "own"){
+        selectedCalendarName = calendarsOwn[selectedCalendar.index];
         calendar.setOption('header', {
             left: 'editButton, shareButton, deleteButton',
             center: 'title',
@@ -90,8 +88,17 @@ function handleCalendarNavClick(id) {
         });
     }
     else if (selectedCalendar.type === "edit") {
+        selectedCalendarName = calendarsEdit[selectedCalendar.index];
         calendar.setOption('header', {
             left: 'shareButton',
+            center: 'title',
+            right: 'today, prev,next',
+        });
+    }
+    else{
+        selectedCalendarName = calendarsView[selectedCalendar.index];
+        calendar.setOption('header', {
+            left: '',
             center: 'title',
             right: 'today, prev,next',
         });
@@ -122,9 +129,11 @@ function handleEditCalendarClick() {
         alert('Input can not be left blank');
         return false;
     }
-    editCalendar(selectedCalendar.calendarID, calendarName, function (result){
+    editCalendar(selectedCalendar.id, calendarName, function (result){
         if(result === "success"){
-            getOwnCalendars();
+            getOwnCalendars(function(){
+                handleCalendarNavClick(JSON.stringify(selectedCalendar));
+            });
             $('#editCalendarNameInput').val('');
             $('#editCalendarModal').modal('hide');
         }
@@ -135,10 +144,10 @@ function handleEditCalendarClick() {
 }
 
 function handleDeleteCalendarClick() {
-    deleteCalendar(selectedCalendar.calendarID, function (result){
+    deleteCalendar(selectedCalendar.id, function (result){
         if(result === "success"){
-            getOwnCalendars();
             $('#deleteCalendarModal').modal('hide');
+            window.location.reload();
         }
         else{
             alert("Delete calendar failed: " + result );
@@ -149,7 +158,7 @@ function handleDeleteCalendarClick() {
 $(document).ready(function() {
     userType = $("input[name='user-userType']").val();
     if(userType){
-        getOwnCalendars();
+        getOwnCalendars(function(){});
     }
     getEditCalendars();
     getViewCalendars();
@@ -164,6 +173,7 @@ $(document).ready(function() {
             editButton: {
                 text: 'Edit',
                 click: function () {
+                    $("#editCalendarModalTitle").text("Edit Calendar: " + selectedCalendarName);
                     $('#editCalendarModal').modal('show');
                 }
             },
@@ -176,6 +186,7 @@ $(document).ready(function() {
             deleteButton: {
                 text: 'Delete',
                 click: function () {
+                    $("#deleteCalendarModalTitle").text("Delete Calendar: " + selectedCalendarName);
                     $('#deleteCalendarModal').modal('show');
                 }
             }
@@ -194,4 +205,15 @@ $(document).ready(function() {
     });
 
     calendar.render();
+
+    
+    let editCalendarNameInput = document.getElementById("editCalendarNameInput");
+
+    editCalendarNameInput.addEventListener("keypress", function(event) {
+        // If enter is pressed
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            document.getElementById("editCalendarButton").click();
+        }
+    });
 });

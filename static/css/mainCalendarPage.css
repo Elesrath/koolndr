@@ -3,6 +3,11 @@
     overflow-y: auto;
 }
 
+.sidebar-selected{
+    color: white;
+    background-color: #0087A6;
+}
+
 @media (max-width: 768px){
     .fc-header-toolbar {
         display: flex;
