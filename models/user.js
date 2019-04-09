@@ -128,10 +128,39 @@ function changeUserType(db, userID, newType, cb)
 }
 
 /**
+ * Get users based on search term
+ * @param db initialized database connection
+ * @param userID
+ * @param searchTerm
+ * @param cb callback
+ */
+function searchUsers(db, userID, searchTerm, cb)
+{
+    log.debug("Searching users containing" + searchTerm);
+    searchTerm = '%'+searchTerm+'%';
+    db.query(`SELECT uuid, username FROM users WHERE username LIKE ? AND uuid != ?`, [searchTerm, userID], (err, result) =>
+    {
+        if(err)
+        {
+            cb(err.sqlMessage, null);
+        }
+        else if(!result[0]) //No results
+        {
+            cb(null, null);
+        }
+        else
+        {
+            cb(null, result);
+        }
+    });
+}
+
+/**
  * @namespace models.user
  */
 module.exports = {
     User: User,
     getUserById: getUserById,
-    changeUserType: changeUserType
+    changeUserType: changeUserType,
+    searchUsers: searchUsers,
 };

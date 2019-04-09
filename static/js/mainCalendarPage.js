@@ -73,6 +73,12 @@ function getViewCalendars(){
     });
 }
 
+function getUserSearchResults(searchTerm, cb){
+    $.post( "/searchUsers", {searchTerm: searchTerm}, function(result) {
+        cb(result);
+    });
+}
+
 function handleCalendarNavClick(id) {
     $(".sidebar-selected").removeClass("sidebar-selected");
     let c = document.getElementById(id);
@@ -155,6 +161,28 @@ function handleDeleteCalendarClick() {
     });
 }
 
+function handleSearchUsersClick(){
+    let searchTerm = $.trim($("#shareCalendarSearchInput").val());
+    if (searchTerm === '') {
+        alert('Input can not be left blank');
+    }
+    else{
+        getUserSearchResults(searchTerm, function(results){
+            let searchResults = $('#searchResults');
+            searchResults.empty();
+            if(results.length === 0){
+                searchResults.append('<button type="button" class="list-group-item list-group-item-action">No Users Found</button>');
+            }
+            else {
+                for (let i = 0; i < results.length; i++) {
+                    searchResults.append('<button type="button" id=' + results[i].uuid +
+                        ' class="list-group-item list-group-item-action">' + results[i].username + '</button>');
+                }
+            }
+        })
+    }
+}
+
 $(document).ready(function() {
     userType = $("input[name='user-userType']").val();
     if(userType){
@@ -180,7 +208,8 @@ $(document).ready(function() {
             shareButton: {
                 text: 'Share',
                 click: function () {
-                    alert('clicked share');
+                    $("#shareCalendarModalTitle").text("Share Calendar: " + selectedCalendarName);
+                    $('#shareCalendarModal').modal('show');
                 }
             },
             deleteButton: {
@@ -206,8 +235,9 @@ $(document).ready(function() {
 
     calendar.render();
 
-    
+
     let editCalendarNameInput = document.getElementById("editCalendarNameInput");
+    let shareCalendarSearchInput = document.getElementById("shareCalendarSearchInput");
 
     editCalendarNameInput.addEventListener("keypress", function(event) {
         // If enter is pressed
@@ -216,4 +246,17 @@ $(document).ready(function() {
             document.getElementById("editCalendarButton").click();
         }
     });
+
+    shareCalendarSearchInput.addEventListener("keypress", function(event) {
+        // If enter is pressed
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            document.getElementById("searchCalendarButton").click();
+        }
+    });
+
+    $('#shareCalendarModal').on('hidden.bs.modal', function () {
+        let searchResults = $('#searchResults');
+        searchResults.empty();
+    })
 });

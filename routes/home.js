@@ -3,6 +3,7 @@
  */
 
 const calendar = require(`${__rootname}/models/calendar.js`);
+const user = require(`${__rootname}/models/user.js`);
 const log = require(`${__rootname}/utils/log.js`);
 
  /**
@@ -113,6 +114,29 @@ function handleDeleteCalendar(req, res, next){
     });
 }
 
+function handleGetUsersWithEditPermissions(req, res, next){
+
+}
+
+function handleGetUsersWithViewPermissions(req, res, next){
+
+}
+
+function handleSearchUsers(req, res, next){
+    let app = this;
+    user.searchUsers(app.locals.db, app.locals.user.id, req.body.searchTerm, (err, results) =>
+    {
+        if(err)
+        {
+            log.debug(err);
+        }
+        else
+        {
+            res.send(results);
+        }
+    });
+}
+
 /**
  * Load the routes in this file
  * @function load
@@ -128,6 +152,9 @@ function load(app) {
     app.post('/addCalendar', handleAddCalendar.bind(app));
     app.post('/editCalendar', handleEditCalendar.bind(app));
     app.post('/deleteCalendar', handleDeleteCalendar.bind(app));
+    app.post('/editUsers', handleGetUsersWithEditPermissions.bind(app));
+    app.post('/viewUsers', handleGetUsersWithViewPermissions.bind(app));
+    app.post('/searchUsers', handleSearchUsers.bind(app));
 }
 
 /**
@@ -142,4 +169,7 @@ module.exports = {
     handleAddCalendar: handleAddCalendar,
     handleEditCalendar: handleEditCalendar,
     handleDeleteCalendar: handleDeleteCalendar,
+    handleGetUsersWithEditPermissions: handleGetUsersWithEditPermissions,
+    handleGetUsersWithViewPermissions: handleGetUsersWithViewPermissions,
+    handleSearchUsers: handleSearchUsers,
 };
