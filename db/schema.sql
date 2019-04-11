@@ -24,7 +24,7 @@ CREATE TABLE `sessioncookie` (
 
 CREATE TABLE `calendars` (
   `calendarID` INT(4) NOT NULL AUTO_INCREMENT,
-  `ownerID` CHAR(36) NOT NULL,
+  `ownerID` CHAR(36) CHARACTER SET latin1 NOT NULL,
   `name` CHAR(36) NOT NULL,
   PRIMARY KEY (`calendarID`),
   UNIQUE KEY `calendarID_UNIQUE` (`calendarID`),
@@ -33,11 +33,12 @@ CREATE TABLE `calendars` (
     FOREIGN KEY (ownerID)
     REFERENCES `users` (uuid)
     ON DELETE CASCADE
-    ON UPDATE CASCADE);
+    ON UPDATE CASCADE
+) Engine=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `canViewEdit` (
   `calendarID` INT(4) NOT NULL,
-  `userID` CHAR(36) NOT NULL,
+  `userID` CHAR(36) CHARACTER SET latin1 NOT NULL,
   `canEdit` BOOLEAN NOT NULL,
   PRIMARY KEY (`calendarID`, `userID`),
   CONSTRAINT `CVECalID`
@@ -49,7 +50,8 @@ CREATE TABLE `canViewEdit` (
 	FOREIGN KEY (`userID`)
     REFERENCES `users` (`uuid`)
     ON DELETE CASCADE
-    ON UPDATE CASCADE);
+    ON UPDATE CASCADE
+) Engine=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `events` (
   `eventID` INT(4) NOT NULL AUTO_INCREMENT,
@@ -63,7 +65,8 @@ CREATE TABLE `events` (
 	FOREIGN KEY (`calendarID`)
     REFERENCES `calendars` (`calendarID`)
     ON DELETE CASCADE
-    ON UPDATE CASCADE);
+    ON UPDATE CASCADE
+) Engine=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- INSERT ALL THE TEST DATA
 
