@@ -8,7 +8,7 @@ const log = require(`${__rootname}/utils/log.js`);
  * Holds information and methods relating to users
  * @class User
  * @memberof models.user
- * @param {WrappedDBConnection} db - the connected database
+ * @param db - the connected database
  */
 
 //UserType: 0 = non-premium, 1 = premium
@@ -30,7 +30,7 @@ function User(db)
      * @function init
      * @memberof models.user.User
      * @param {string} id - the uuid of the user to grab data for
-     * @callback cb - a callback taking (err, success)
+     * @param cb - a callback taking (err, success)
      */
     self.init = function (id, cb)
     {
@@ -78,9 +78,9 @@ function User(db)
  * Get a user by id
  * @function getUserById
  * @memberof models.user
- * @param {WrappedDBConnection} db - the connected database
+ * @param db - the connected database
  * @param {string} id - the user id
- * @callback cb - a callback taking (user)
+ * @param cb - a callback taking (user)
  */
 function getUserById(db, id, cb)
 {
@@ -116,7 +116,7 @@ function changeUserType(db, userID, newType, cb)
     log.debug("Changing user " + userID + " to type " + newType);
     db.query(`UPDATE users SET userType = ? WHERE uuid = ?`, [newType, userID], (err) =>
     {
-        if(err)
+        if (err)
         {
             cb(err.sqlMessage);
         }
@@ -143,16 +143,16 @@ function updateUserInfo(db, userID, newName, newPassword, newEmail, cb)
         SET username = ?, password = ?, email = ?
         WHERE uuid = ?`,
         [newName, newPassword, newEmail, userID], (err) =>
-    {
-        if(err)
         {
-            cb(err.sqlMessage);
-        }
-        else
-        {
-            cb(null);
-        }
-    });
+            if (err)
+            {
+                cb(err.sqlMessage);
+            }
+            else
+            {
+                cb(null);
+            }
+        });
 }
 
 /**
@@ -165,14 +165,14 @@ function updateUserInfo(db, userID, newName, newPassword, newEmail, cb)
 function searchUsers(db, userID, searchTerm, cb)
 {
     log.debug("Searching users containing" + searchTerm);
-    searchTerm = '%'+searchTerm+'%';
+    searchTerm = '%' + searchTerm + '%';
     db.query(`SELECT uuid, username FROM users WHERE username LIKE ? AND uuid != ?`, [searchTerm, userID], (err, result) =>
     {
-        if(err)
+        if (err)
         {
             cb(err.sqlMessage, null);
         }
-        else if(!result[0]) //No results
+        else if (!result[0]) //No results
         {
             cb(null, null);
         }
