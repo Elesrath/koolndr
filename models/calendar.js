@@ -2,40 +2,6 @@
 
 const log = require(`${__rootname}/utils/log.js`);
 
-//This is how User.js is used successfully
-/*
-const user = require(`${__rootname}/models/user.js`);
-
-user.getUserById(app.locals.db, uuid, (usr) => {
-    app.locals.user = usr;
-    res.redirect(301, '/');
-});
-*/
-
-//How To use this function successfully:
-/*
-//At Beginning of Class:
-const calendar = require(`${__rootname}/models/calendar.js`);
-
-//Call the function itself
-calendar.addCalendar(app.locals.db, "TestyMcTestFace", "123", (err, success) =>
-{
-    if(err)
-    {
-        log.debug("An error occured in test call of addCalendar");
-        log.debug(err);
-    }
-    if(success)
-    {
-        log.debug("Add Calendar called successfully");
-    }
-    else
-    {
-        log.debug("Add Calendar failed");
-    }
-});
-*/
-
 /**
  * Adds a new calendar to the database
  * @param db initialized database connection
@@ -51,11 +17,11 @@ function addCalendar(db, name, ownerID, cb)
     FROM users
     WHERE uuid = ? AND userType = 1`, [ownerID], (err, row) =>
     {
-        if(err)
+        if (err)
         {
             cb(err.sqlMessage);
         }
-        else if(!row[0])
+        else if (!row[0])
         {
             cb("Error: User " + ownerID + " is not a premium user and therefore cannot create calendars");
         }
@@ -66,7 +32,7 @@ function addCalendar(db, name, ownerID, cb)
                 if (err)
                 {
 
-                    if(err.sqlMessage.includes("a foreign key constraint fails"))
+                    if (err.sqlMessage.includes("a foreign key constraint fails"))
                     {
                         log.debug("addCalendar called with suspected bad uuid");
                     }
@@ -95,38 +61,38 @@ function getOwnedCalendars(db, userID, cb)
     FROM users
     WHERE uuid = ? AND userType = 1`,
         [userID], (err, row) =>
-    {
-        if(err)
         {
-            cb(err.sqlMessage, null);
-        }
-        else if(!row[0]) //User is not premium
-        {
-            cb(null, null);
-        }
-        else
-        {
-            db.query(`
+            if (err)
+            {
+                cb(err.sqlMessage, null);
+            }
+            else if (!row[0]) //User is not premium
+            {
+                cb(null, null);
+            }
+            else
+            {
+                db.query(`
             SELECT calendarID, name
             FROM calendars
             WHERE ownerID = ?`,
-                [userID], (err, result) =>
-            {
-                if(err)
-                {
-                    cb(err.sqlMessage, null);
-                }
-                else if(!result[0]) //User has no premium calendars
-                {
-                    cb(null, null);
-                }
-                else
-                {
-                    cb(null, result);
-                }
-            });
-        }
-    });
+                    [userID], (err, result) =>
+                    {
+                        if (err)
+                        {
+                            cb(err.sqlMessage, null);
+                        }
+                        else if (!result[0]) //User has no premium calendars
+                        {
+                            cb(null, null);
+                        }
+                        else
+                        {
+                            cb(null, result);
+                        }
+                    });
+            }
+        });
 }
 
 /**
@@ -144,20 +110,20 @@ function getViewableCalendars(db, userID, cb)
     ON calendars.calendarID = canViewEdit.calendarID
     WHERE canViewEdit.userID = ? AND canViewEdit.canEdit = FALSE`,
         [userID], (err, row) =>
-    {
-        if(err)
         {
-            cb(err.sqlMessage, null);
-        }
-        else if(!row[0]) //There are no viewable calendars
-        {
-            cb(null, null);
-        }
-        else
-        {
-            cb(null, row);
-        }
-    });
+            if (err)
+            {
+                cb(err.sqlMessage, null);
+            }
+            else if (!row[0]) //There are no viewable calendars
+            {
+                cb(null, null);
+            }
+            else
+            {
+                cb(null, row);
+            }
+        });
 }
 
 /**
@@ -173,44 +139,45 @@ function getEditableCalendars(db, userID, cb)
     FROM users
     WHERE uuid = ? AND userType = 1`,
         [userID], (err, row) =>
-    {
-        if (err)
         {
-            cb(err.sqlMessage, null);
-        }
-        else if (!row[0]) //User is not premium
-        {
-            cb(null, null);
-        }
-        else
-        {
-            db.query(`
+            if (err)
+            {
+                cb(err.sqlMessage, null);
+            }
+            else if (!row[0]) //User is not premium
+            {
+                cb(null, null);
+            }
+            else
+            {
+                db.query(`
             SELECT calendars.calendarID, calendars.name
             FROM calendars
             INNER JOIN canViewEdit
             ON calendars.calendarID = canViewEdit.calendarID
             WHERE canViewEdit.userID = ? AND canViewEdit.canEdit = TRUE`,
-                [userID], (err, row) =>
-            {
-                if (err)
-                {
-                    cb(err.sqlMessage, null);
-                }
-                else if (!row[0]) //There are no editable calendars
-                {
-                    cb(null, null);
-                }
-                else
-                {
-                    cb(null, row);
-                }
-            });
-        }
-    });
+                    [userID], (err, row) =>
+                    {
+                        if (err)
+                        {
+                            cb(err.sqlMessage, null);
+                        }
+                        else if (!row[0]) //There are no editable calendars
+                        {
+                            cb(null, null);
+                        }
+                        else
+                        {
+                            cb(null, row);
+                        }
+                    });
+            }
+        });
 }
 
 /**
  * The user identified by sharerID grants the user represented by recipientID viewing privileges
+ * Note that you do not need to revoke any previous permissions the target may have had
  * @param db initialized database connection
  * @param sharerID premium user with edit privileges on calendarID
  * @param recipientID user being granted viewing privileges
@@ -219,109 +186,213 @@ function getEditableCalendars(db, userID, cb)
  */
 function grantViewPrivileges(db, sharerID, recipientID, calendarID, cb)
 {
-    //TODO stub function
-    /*
-    log.debug("Granting view privileges to " + recipientID + " by " + sharerID + " to calendar " + calendarID);
-    db.query(`INSERT INTO canViewEdit(calendarID, userID, canEdit)
-              SELECT ?, ?, FALSE
-              FROM canViewEdit, calendars
-              WHERE (calendars.calendarID = ? AND calendars.ownerID = ?) 
-              OR (canViewEdit.calendarID = ? AND canViewEdit.userID = ? AND canViewEdit.canEdit = TRUE)`,
-        [calendarID, recipientID, calendarID, sharerID, calendarID, sharerID], (err) =>
-    {
-        if(err)
+    db.query(
+        `SELECT 1
+        FROM calendars
+        WHERE calendarID = ? AND ownerID = ?
+        UNION
+        SELECT 1
+        FROM canViewEdit
+        WHERE calendarID = ? AND userID = ? AND canEdit = TRUE`,
+        [calendarID, sharerID, calendarID, sharerID], (err, row) =>
         {
-            cb(err.sqlMessage);
-        }
-        else
-        {
-            cb(null);
-        }
-    });
-    */
-    cb("Stub function");
-}
-
-/**
- * The user identified by revokerID revokes the user represented by targetID viewing privileges
- * @param db initialized database connection
- * @param revokerID premium user with edit privileges on calendarID
- * @param targetID user being revoked viewing privileges
- * @param calendarID calendar to grant privileges to
- * @param cb callback
- */
-function revokeViewPrivileges(db, revokerID, targetID, calendarID, cb)
-{
-    //TODO stub function
-    //This almost certainly doesn't work!
-    /*
-    log.debug("Revoking View Privileges from " + targetID + " for " + calendarID);
-    db.query(`
-    DELETE FROM canViewEdit 
-    WHERE (calendarID = ? AND userID = ? AND canEdit = FALSE) 
-    AND ((calendars.calendarID = ? AND calendars.ownerID = ?) 
-    OR (calendarID = ? AND userID = ? AND canEdit = TRUE))`,
-        [calendarID, targetID, calendarID, revokerID, calendarID, revokerID], (err, res) =>
-    {
-        if(err)
-        {
-            cb(err.sqlMessage);
-        }
-        else
-        {
-            cb(null);
-        }
-    });
-
-     */
-    cb("Stub function");
+            if (err)
+            {
+                cb(err.sqlMessage);
+            }
+            else if (!row[0])
+            {
+                cb("Error: user " + sharerID + " does not have edit privileges on calendar " + calendarID);
+            }
+            else
+            {
+                db.query(
+                    `SELECT 1
+                FROM canViewEdit
+                WHERE userID = ? AND calendarID = ?`,
+                    [recipientID, calendarID], (err, row) =>
+                    {
+                        if (err)
+                        {
+                            cb(err.sqlMessage);
+                        }
+                        else if (!row[0])
+                        {
+                            //recipient does not already exist in table, so add them
+                            db.query(
+                                `INSERT INTO canViewEdit(calendarID, userID, canEdit)
+                        VALUES (?, ?, FALSE)`,
+                                [calendarID, recipientID], (err) =>
+                                {
+                                    if (err)
+                                    {
+                                        cb(err.sqlMessage);
+                                    }
+                                    else
+                                    {
+                                        cb(null);
+                                    }
+                                });
+                        }
+                        else
+                        {
+                            //recipient already exists in table, so update them
+                            //This is the same as demoting them to view only
+                            db.query(
+                                `UPDATE canViewEdit
+                        SET canEdit = FALSE
+                        WHERE calendarID = ? AND userID = ?`,
+                                [calendarID, recipientID], (err) =>
+                                {
+                                    if (err)
+                                    {
+                                        cb(err.sqlMessage);
+                                    }
+                                    else
+                                    {
+                                        cb(null);
+                                    }
+                                });
+                        }
+                    });
+            }
+        });
 }
 
 /**
  * The user owner identified by ownerID grants the user represented by recipientID editing privileges
+ * Note that you do not need to revoke any previous permissions the user may have had
  * @param db initialized database connection
- * @param ownerID premium user that owns calendarID
+ * @param sharerID premium user with edit privileges on calendarID
  * @param recipientID user being granted editinging privileges
  * @param calendarID calendar to grant privileges to
  * @param cb callback
  */
-function grantEditPrivileges(db, ownerID, recipientID, calendarID, cb)
+function grantEditPrivileges(db, sharerID, recipientID, calendarID, cb)
 {
-    //TODO stub function
-    //This almost certainly doesn't work
-    /*
-    log.debug("Granting edit privileges to " + recipientID + " by " + ownerID + " to calendar " + calendarID);
-    db.query(`INSERT INTO canViewEdit(calendarID, userID, canEdit)
-              SELECT ?, ?, TRUE
-              FROM canViewEdit, calendars
-              WHERE (calendars.calendarID = ? AND calendars.ownerID = ?)`, [calendarID, recipientID, calendarID, ownerID], (err, res) =>
-    {
-        if(err)
+    db.query(
+        `SELECT 1
+        FROM calendars
+        WHERE calendarID = ? AND ownerID = ?
+        UNION
+        SELECT 1
+        FROM canViewEdit
+        WHERE calendarID = ? AND userID = ? AND canEdit = TRUE`,
+        [calendarID, sharerID, calendarID, sharerID], (err, row) =>
         {
-            cb(err.sqlMessage);
-        }
-        else
-        {
-            cb(null);
-        }
-    });
-
-     */
-    cb("Stub function");
+            if (err)
+            {
+                cb(err.sqlMessage);
+            }
+            else if (!row[0])
+            {
+                cb("Error: user " + sharerID + " does not have edit privileges on calendar " + calendarID);
+            }
+            else
+            {
+                db.query(
+                    `SELECT 1
+                FROM canViewEdit
+                WHERE userID = ? AND calendarID = ?`,
+                    [recipientID, calendarID], (err, row) =>
+                    {
+                        if (err)
+                        {
+                            cb(err.sqlMessage);
+                        }
+                        else if (!row[0])
+                        {
+                            //recipient does not already exist in table, so add them
+                            db.query(
+                                `INSERT INTO canViewEdit(calendarID, userID, canEdit)
+                        VALUES (?, ?, TRUE)`,
+                                [calendarID, recipientID], (err) =>
+                                {
+                                    if (err)
+                                    {
+                                        cb(err.sqlMessage);
+                                    }
+                                    else
+                                    {
+                                        cb(null);
+                                    }
+                                });
+                        }
+                        else
+                        {
+                            //recipient already exists in table, so update them
+                            //This is the same as demoting them to view only
+                            db.query(
+                                `UPDATE canViewEdit
+                        SET canEdit = TRUE
+                        WHERE calendarID = ? AND userID = ?`,
+                                [calendarID, recipientID], (err) =>
+                                {
+                                    if (err)
+                                    {
+                                        cb(err.sqlMessage);
+                                    }
+                                    else
+                                    {
+                                        cb(null);
+                                    }
+                                });
+                        }
+                    });
+            }
+        });
 }
 
 /**
- * The user identified by ownerID revokes the user represented by targetID editing privileges
+ * The user identified by revokerID revokes the user represented by targetID access privileges
+ * This works regardless of what kind of access the target had. You do not need to do this if
+ * you want to change their access level, just grant them the desired type of privileges
  * @param db initialized database connection
- * @param ownerID owner of calendarID
- * @param targetID user being revoked editing privileges
- * @param calendarID calendar to grant privileges to
+ * @param revokerID premium user with edit privileges on calendarID
+ * @param targetID user being revoked privileges
+ * @param calendarID calendar to revoke privileges to
  * @param cb callback
  */
-function revokeEditPrivileges(db, ownerID, targetID, calendarID, cb)
+function revokePrivileges(db, revokerID, targetID, calendarID, cb)
 {
-    //TODO stub function
-    cb("Stub Function", null);
+    db.query(
+        `SELECT 1
+        FROM calendars
+        WHERE calendarID = ? AND ownerID = ?
+        UNION
+        SELECT 1
+        FROM canViewEdit
+        WHERE calendarID = ? AND userID = ? AND canEdit = TRUE`,
+        [calendarID, revokerID, calendarID, revokerID], (err, row) =>
+        {
+            if (err)
+            {
+                cb(err.sqlMessage);
+            }
+            else if (!row[0])
+            {
+                cb("Error: user " + revokerID + " does not have edit privileges on calendar " + calendarID);
+            }
+            else
+            {
+                db.query(
+                    `DELETE
+                    FROM canViewEdit
+                    WHERE userID = ? AND calendarID = ?`,
+                    [targetID, calendarID], (err) =>
+                    {
+                        if (err)
+                        {
+                            cb(err.sqlMessage);
+                        }
+                        else
+                        {
+                            cb(null);
+                        }
+                    }
+                )
+            }
+        });
 }
 
 /**
@@ -341,11 +412,11 @@ function updateCalendar(db, calendarID, ownerID, name, cb)
         WHERE users.uuid = ? AND users.userType = 1 AND calendars.calendarID = ?`,
         [ownerID, calendarID], (err, row) =>
         {
-            if(err)
+            if (err)
             {
                 cb(err.sqlMessage);
             }
-            else if(!row[0])
+            else if (!row[0])
             {
                 cb("Error: user does not own calendar, or userId or calendarId does not exist");
             }
@@ -357,7 +428,7 @@ function updateCalendar(db, calendarID, ownerID, name, cb)
                     WHERE ownerID = ? AND calendarID = ?`,
                     [name, ownerID, calendarID], (err) =>
                     {
-                        if(err)
+                        if (err)
                         {
                             cb(err.sqlMessage);
                         }
@@ -385,37 +456,85 @@ function removeCalendar(db, calendarID, ownerID, cb)
         INNER JOIN calendars ON calendars.ownerID = users.uuid
         WHERE users.uuid = ? AND users.userType = 1 AND calendars.calendarID = ?`,
         [ownerID, calendarID], (err, row) =>
-    {
-        if(err)
         {
-            cb(err.sqlMessage);
-        }
-        else if(!row[0])
-        {
-            cb("Error: user does not own calendar, or userId or calendarId does not exist");
-        }
-        else
-        {
-            db.query(
-                `DELETE
+            if (err)
+            {
+                cb(err.sqlMessage);
+            }
+            else if (!row[0])
+            {
+                cb("Error: user does not own calendar, or userId or calendarId does not exist");
+            }
+            else
+            {
+                db.query(
+                    `DELETE
                 FROM calendars
                 WHERE ownerID = ? AND calendarID = ?`,
-                [ownerID, calendarID], (err) =>
-            {
-                if(err)
-                {
-                    cb(err.sqlMessage);
-                }
-                else
-                {
-                    cb(null);
-                }
-            });
-        }
-    });
+                    [ownerID, calendarID], (err) =>
+                    {
+                        if (err)
+                        {
+                            cb(err.sqlMessage);
+                        }
+                        else
+                        {
+                            cb(null);
+                        }
+                    });
+            }
+        });
 }
 
-//
+/**
+ * Returns a list of all userID's that have viewing privileges on calendarID
+ * @param db initialized database connection
+ * @param calendarID calendar to search
+ * @param cb callback
+ */
+function getViewers(db, calendarID, cb)
+{
+    db.query(
+        `SELECT userID
+        FROM canViewEdit
+        WHERE calendarID = ? and canEdit = FALSE`,
+        [calendarID], (err, result) =>
+        {
+            if (err)
+            {
+                cb(err.sqlMessage, null);
+            }
+            else
+            {
+                cb(null, result);
+            }
+        });
+}
+
+/**
+ * Returns a list of all userID's that have editing privileges on calendarID
+ * @param db initialized database connection
+ * @param calendarID calendar to search
+ * @param cb callback
+ */
+function getEditors(db, calendarID, cb)
+{
+    db.query(
+        `SELECT userID
+        FROM canViewEdit
+        WHERE calendarID = ? and canEdit = TRUE`,
+        [calendarID], (err, result) =>
+        {
+            if (err)
+            {
+                cb(err.sqlMessage, null);
+            }
+            else
+            {
+                cb(null, result);
+            }
+        });
+}
 
 /**
  * @namespace models.calendar
@@ -427,9 +546,10 @@ module.exports = {
     getEditableCalendars: getEditableCalendars,
     grantViewPrivileges: grantViewPrivileges,
     grantEditPrivileges: grantEditPrivileges,
-    revokeViewPrivileges: revokeViewPrivileges,
-    revokeEditPrivileges: revokeEditPrivileges,
+    revokePrivileges: revokePrivileges,
     updateCalendar: updateCalendar,
-    removeCalendar: removeCalendar
+    removeCalendar: removeCalendar,
+    getViewers: getViewers,
+    getEditors: getEditors
 
 };
