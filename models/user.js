@@ -128,6 +128,34 @@ function changeUserType(db, userID, newType, cb)
 }
 
 /**
+ * Update the information of the user
+ * @param db initialized database connection
+ * @param userID id of user to update
+ * @param newName new username
+ * @param newPassword new password
+ * @param newEmail new email
+ * @param cb callback
+ */
+function updateUserInfo(db, userID, newName, newPassword, newEmail, cb)
+{
+    db.query(
+        `UPDATE users
+        SET username = ?, password = ?, email = ?
+        WHERE uuid = ?`,
+        [newName, newPassword, newEmail, userID], (err) =>
+    {
+        if(err)
+        {
+            cb(err.sqlMessage);
+        }
+        else
+        {
+            cb(null);
+        }
+    });
+}
+
+/**
  * Get users based on search term
  * @param db initialized database connection
  * @param userID
@@ -163,4 +191,5 @@ module.exports = {
     getUserById: getUserById,
     changeUserType: changeUserType,
     searchUsers: searchUsers,
+    updateUserInfo: updateUserInfo
 };
