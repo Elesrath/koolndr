@@ -116,8 +116,43 @@ function getEvents(db, calendarID, userID, rangeBegin, rangeEnd, cb)
  */
 function editEvent(db, calendarID, userID, eventID, newStart, newEnd, newName, newDescription, cb)
 {
-    //TODO stub function
-    cb("Stub Function", null);
+    db.query(
+        `SELECT 1
+        FROM calendars
+        WHERE calendarID = ? AND ownerID = ?
+        UNION
+        SELECT 1
+        FROM canViewEdit
+        WHERE calendarID = ? AND userID = ? AND canEdit = TRUE`,
+        [calendarID, userID, calendarID, userID], (err, row) =>
+        {
+            if(err)
+            {
+                cb(err.sqlMessage);
+            }
+            else if(!row[0])
+            {
+                cb("Error: User " + userID + " does not have edit privileges on calendar " + calendarID);
+            }
+            else
+            {
+                cb.query(
+                    `UPDATE events
+                    SET startDate = ?, endDate = ?, eventName = ?, eventDescription = ?
+                    WHERE eventID = ?`,
+                    [newStart, newEnd, newName, newDescription], (err) =>
+                    {
+                        if(err)
+                        {
+                            cb(err.sqlMessage);
+                        }
+                        else
+                        {
+                            cb(null);
+                        }
+                    });
+            }
+        });
 }
 
 /**
@@ -130,8 +165,43 @@ function editEvent(db, calendarID, userID, eventID, newStart, newEnd, newName, n
  */
 function removeEvent(db, calendarID, userID, eventID, cb)
 {
-    //TODO stub function
-    cb("Stub function", null);
+    db.query(
+        `SELECT 1
+        FROM calendars
+        WHERE calendarID = ? AND ownerID = ?
+        UNION
+        SELECT 1
+        FROM canViewEdit
+        WHERE calendarID = ? AND userID = ? AND canEdit = TRUE`,
+        [calendarID, userID, calendarID, userID], (err, row) =>
+        {
+            if(err)
+            {
+                cb(err.sqlMessage);
+            }
+            else if(!row[0])
+            {
+                cb("Error: User " + userID + " does not have edit privileges on calendar " + calendarID);
+            }
+            else
+            {
+                cb.query(
+                    `DELETE
+                    FROM events
+                    WHERE eventID = ?`,
+                    [eventID, calendarID], (err) =>
+                    {
+                        if(err)
+                        {
+                            cb(err.sqlMessage);
+                        }
+                        else
+                        {
+                            cb(null);
+                        }
+                    });
+            }
+        });
 }
 
 /**
