@@ -268,6 +268,83 @@
         </div>
     </div>
 
+    <!-- Add Event Modal-->
+    <div class="modal fade" id="addEventModal" tabindex="-1" role="dialog" aria-labelledby="addEventModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Event</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-label-group">
+                            <input id="eventNameInput" class="form-control" maxlength="30" required="required" autofocus="autofocus">
+                            <label for="eventNameInput">Event Name</label>
+                        </div>
+                        <div class="form-label-group">
+                            <input type="date" id="eventStartDate" class="form-control" required="required">
+                            <label for="eventStartDate">Start Date</label>
+                        </div>
+                        <div class="form-label-group">
+                            <input type="date" id="eventEndDate" class="form-control" required="required">
+                            <label for="eventEndDate">End Date</label>
+                        </div>
+                        <div class="form-label-group">
+                            <input id="eventDescription" class="form-control" maxlength="60" required="required">
+                            <label for="eventDescription">Event Description</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button id="addEventButton" class="btn btn-primary" type="submit" onclick="handleAddEventClick();return false;">Create Event</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Event Modal-->
+    <div class="modal fade" id="editEventModal" tabindex="-1" role="dialog" aria-labelledby="editEventModal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editEventModalTitle"></h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-label-group">
+                                <input id="eventNewName" class="form-control" maxlength="30" required="required" autofocus="autofocus">
+                                <label for="eventNewName">Event Name</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="date" id="eventNewStart" class="form-control" required="required">
+                                <label for="eventNewStart">Start Date</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="date" id="eventNewEnd" class="form-control" required="required">
+                                <label for="eventNewEnd">End Date</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input id="eventNewDescription" class="form-control" maxlength="60" required="required">
+                                <label for="eventNewDescription">Event Description</label>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                        <button id="deleteEventButton" class="btn btn-danger" type="submit" onclick="handleDeleteEventClick();return false;">Delete</button>
+                        <button id="editEventButton" class="btn btn-primary" type="submit" onclick="handleEditEventClick();return false;">Edit Event</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     <!-- Bootstrap core JavaScript-->
     <script src="/startbootstrap-sb-admin-gh-pages/vendor/jquery/jquery.min.js"></script>
     <script src="/startbootstrap-sb-admin-gh-pages/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
