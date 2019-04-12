@@ -12,6 +12,7 @@ global.__rootname = __dirname;
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const ews = require('express-ws');
 
 const conf = require(`${__rootname}/conf.json`);
 const log = require(`${__rootname}/utils/log.js`);
@@ -29,6 +30,7 @@ function main()
 {
     log.info('Starting Koolndur!');
     let app = express();
+    let expressWebsocket = ews(app);
 
     // express configuration
     app.use(bodyParser.urlencoded({
@@ -60,6 +62,19 @@ function main()
         log.info('Connected');
 
         log.info(`Setup complete. Listening on ${conf.port}`);
+
+        // ws routes have their errors silenced. This has to be the last middleware in the chain
+        function errorHandler (err, req, res, next) {
+            if(req.ws){
+                log.error("ERROR from WS route - ", err);
+            } else {
+                log.error(err);
+                res.setHeader('Content-Type', 'text/plain');
+                res.status(500).send(err.stack);
+            }
+        }
+        app.use(errorHandler);
+
         app.listen(conf.port);
 
         //TODO remove me once my purpose as an example is no more :(
@@ -148,9 +163,6 @@ function main()
                 });
             }
         });
-
-
-
     });
 }
 

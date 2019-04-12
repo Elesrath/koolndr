@@ -27,7 +27,6 @@ module.exports = {
                 log.debug('Found in SASS cache');
                 res.setHeader('content-type', 'text/css');
                 res.send(sassCache[`${__rootname}/${conf.staticPath}/${sassFile}`]);
-                next();
                 return;
             }
 
@@ -63,7 +62,6 @@ module.exports = {
 
                     res.setHeader('content-type', 'text/css');
                     res.send(result.css.toString());
-                    next();
                 });
             });
         });
