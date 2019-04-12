@@ -22,6 +22,7 @@ const db = require(`${__rootname}/utils/db.js`);
 const calendar = require(`${__rootname}/models/calendar.js`);
 const events = require(`${__rootname}/models/events.js`);
 const auth = require(`${__rootname}/utils/authentication.js`);
+const users = require(`${__rootname}/models/user.js`);
 
 
 function main()
@@ -110,7 +111,29 @@ function main()
                                             }
                                             else if(res)
                                             {
-                                                log.debug(res)
+                                                log.debug(res);
+                                                calendar.updateCalendar(app.locals.db, 2, testUserID, "HelloImANewCalendar", (err) =>
+                                                {
+                                                    if(err)
+                                                    {
+                                                        log.debug(err);
+                                                    }
+                                                    else
+                                                    {
+                                                        log.debug("Calendar has been updated");
+                                                        users.updateUserInfo(app.locals.db, testUserID, "Jeffrey", "Test", "test@testing.ca", (err) =>
+                                                        {
+                                                            if(err)
+                                                            {
+                                                                log.debug(err);
+                                                            }
+                                                            else
+                                                            {
+                                                                log.debug("user updated");
+                                                            }
+                                                        });
+                                                    }
+                                                })
                                             }
                                             else
                                             {
