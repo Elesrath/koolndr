@@ -23,10 +23,6 @@
         <script src='/fullcalendar/daygrid/main.js'></script>
         <script src='/fullcalendar/interaction/main.js'></script>
         <script src='/fullcalendar/bootstrap/main.js'></script>
-        <script>
-
-
-        </script>
     </head>
     <body id="page-top">
 
@@ -41,7 +37,7 @@
 
         <!-- Navbar Search -->
         <span class="d-none d-md-inline-block navbar-brand mr-auto ml-auto mr-md-3 my-2 my-md-0">
-            <%= app.locals.user.username %>
+            <%= res.locals.user.username %>
         </span>
 
         <!-- Navbar -->
@@ -66,7 +62,7 @@
         <!-- Sidebar -->
         <ul class="sidebar navbar-nav sidebar-scroll">
             <li id="navBar" class="nav-item">
-                <% if(app.locals.user.userType){ %>
+                <% if(res.locals.user.userType){ %>
                     <a class="nav-link" href="#" id="addNewCalendar" data-toggle="modal" data-target="#addNewCalendarModal">
                         <i class="fas fa-fw fa-calendar-plus"></i>
                         <span>Add Calendar</span>
@@ -86,7 +82,7 @@
 
         <div id="content-wrapper">
             <div class="container-fluid">
-                <%- include('common/userData.ejs', {user: app.locals.user}); %>
+                <%- include('common/userData.ejs', {user: res.locals.user}); %>
 
                 <!-- Calendar -->
                 <div id='calendar'></div>
@@ -278,6 +274,7 @@
     <!-- Custom scripts for all pages-->
     <script src="/startbootstrap-sb-admin-gh-pages/js/sb-admin.min.js"></script>
     <script src="/js/mainCalendarPage.js"></script>
-    
+    <script src="/js/wsComms.js"></script>
+
     </body>
 </html>

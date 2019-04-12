@@ -1,6 +1,6 @@
 /**
  * Routes for ensuring a user is authenticated
- * @note this is 01 because it needs to run AFTER the static routes but before everything else
+ * @note this is 02 because it needs to run AFTER the static routes but before everything else
  */
 
 const authentication = require(`${__rootname}/utils/authentication.js`);
@@ -25,7 +25,7 @@ module.exports = {
                         if (uuid) {
                             // user is already authenticated - redirect to home
                             user.getUserById(app.locals.db, uuid, (usr) => {
-                                app.locals.user = usr;
+                                res.locals.user = usr;
                                 res.redirect(301, '/');
                             });
                         } else {
@@ -35,7 +35,7 @@ module.exports = {
                     } else if (uuid) {
                         // user is authenticated - let routing continue
                         user.getUserById(app.locals.db, uuid, (usr) => {
-                            app.locals.user = usr;
+                            res.locals.user = usr;
                             next();
                         });
                     } else {
