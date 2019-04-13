@@ -28,7 +28,7 @@ function getDB(cb)
             user: conf.db.user,
             password: credentials.db,
             database: conf.db.database,
-            //socketPath: conf.db.socket
+            socketPath: conf.db.socket
         };
 
         log.debug('Connecting to DB with options: ', options);

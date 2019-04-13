@@ -211,11 +211,11 @@ function getEvents(calendarID, cb) {
 
     let starting = new Date();
     starting = calendar.getDate();
-    starting.setMonth(starting.getMonth()-2);
+    starting.setFullYear(starting.getFullYear()-5);
 
     let ending = new Date();
     ending = calendar.getDate();
-    ending.setMonth(ending.getMonth()+2);
+    ending.setFullYear(ending.getFullYear()+5);
 
     let rangeBegin = starting.getUTCFullYear() +
     '-' + pad(starting.getUTCMonth() + 1) +
@@ -246,7 +246,6 @@ function getEvents(calendarID, cb) {
 
         eventlist.forEach(function(event) {
             calendar.addEvent(event);
-            console.log(event);
         });
 
         cb(events);
@@ -395,10 +394,14 @@ $(document).ready(function() {
         eventClick: function(info) {
             selectedEvent = info.event;
             info.jsEvent.preventDefault();                      // don't let the browser navigate by default
-            
+
             let starting = selectedEvent.start;
-            let ending = selectedEvent.end;
-            ending.setDate(ending.getDate());
+            let ending;
+            if (selectedEvent.end) {
+                ending = selectedEvent.end;
+            } else {
+                ending = selectedEvent.start;
+            }
 
             let starting_str = starting.getUTCFullYear() +
             '-' + pad(starting.getUTCMonth() + 1) +
