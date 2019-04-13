@@ -416,8 +416,38 @@ $(document).ready(function() {
             $("#eventNewStart").val(starting_str);
             $("#eventNewEnd").val(ending_str);
         },
-        eventDropInfo: function(info) {
+        eventDrop: function(info) {
 
+            selectedEvent = info.event;
+            let eventName = selectedEvent.title;
+            let eventID = selectedEvent.id;
+
+            eventDescription = selectedEvent.extendedProps.description;
+
+            let newStartDate = new Date(selectedEvent.start);
+            let newEndDate = new Date(selectedEvent.end);
+
+            let newStart = newStartDate.getUTCFullYear() +
+            '-' + pad(newStartDate.getUTCMonth() + 1) +
+            '-' + pad(newStartDate.getUTCDate());
+        
+            let newEnd = newEndDate.getUTCFullYear() +
+            '-' + pad(newEndDate.getUTCMonth() + 1) +
+            '-' + pad(newEndDate.getUTCDate());
+
+            editEvent(selectedCalendar.id, eventID, newStart, newEnd, eventName, eventDescription, function (result) {
+                if (result === "success") {
+                    getEvents(selectedCalendar.id, function(results){
+                    });
+                }
+                else {
+                    alert("Editing event failed: " + result);
+                }
+            });
+        },
+        eventRender: function(info) {
+            let desc = info.event.extendedProps.description;
+            info.el.insertAdjacentHTML('beforeend', desc);
         }
     });
 
