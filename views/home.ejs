@@ -2,9 +2,9 @@
 <html>
     <%- include('common/headStuff.ejs'); %>
     <body>
-        <%- include('common/userData.ejs', {user: app.locals.user}); %>
+        <%- include('common/userData.ejs', {user: res.locals.user}); %>
         <pre>
-            <%= app.locals.user.toJSON() %>
+            <%= res.locals.user.toJSON() %>
         </pre>
     </body>
 </html>

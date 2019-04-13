@@ -19,8 +19,11 @@ const conf = require(`${__rootname}/conf.json`);
  * @param {function} next - the next routing handler
  */
 function handleLoginPage(req, res, next) {
+    let app = this;
     res.render('login', {
-        req: req
+        req: req,
+        res: res,
+        app: app
     });
     next();
 }
@@ -41,6 +44,8 @@ function handleLoginAttempt(req, res, next) {
             log.error(err);
             res.render('login', {
                 req: req,
+                res: res,
+                app: app,
                 error: 'An error occurred.'
             });
             next();
@@ -50,6 +55,8 @@ function handleLoginAttempt(req, res, next) {
         if (!uuid || !username) {
             res.render('login', {
                 req: req,
+                res: res,
+                app: app,
                 error: 'Username or password was incorrect'
             });
             next();
@@ -61,13 +68,15 @@ function handleLoginAttempt(req, res, next) {
                 log.error(err);
                 res.render('login', {
                     req: req,
+                    res: res,
+                    app: app,
                     error: 'An error occurred.'
                 });
                 next();
                 return;
             }
 
-            app.locals.user = {
+            res.locals.user = {
                 id: uuid,
                 username: username,
                 session: session

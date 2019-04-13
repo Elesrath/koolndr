@@ -16,15 +16,18 @@ const log = require(`${__rootname}/utils/log.js`);
   * @param {function} next - the next routing handler
   */
 function handleHomePage(req, res, next) {
+    let app = this;
+
     res.render('mainCalendarPage', {
-        app: this,
-        req: req
+        app: app,
+        req: req,
+        res: res
     });
 }
 
 function handleGetOwnCalendars(req, res, next){
     let app = this;
-    calendar.getOwnedCalendars(app.locals.db, app.locals.user.id, (err, calendars) =>
+    calendar.getOwnedCalendars(app.locals.db, res.locals.user.id, (err, calendars) =>
     {
         if(err)
         {
@@ -39,7 +42,7 @@ function handleGetOwnCalendars(req, res, next){
 
 function handleGetEditCalendars(req, res, next){
     let app = this;
-    calendar.getEditableCalendars(app.locals.db, app.locals.user.id, (err, calendars) =>
+    calendar.getEditableCalendars(app.locals.db, res.locals.user.id, (err, calendars) =>
     {
         if(err)
         {
@@ -54,7 +57,7 @@ function handleGetEditCalendars(req, res, next){
 
 function handleGetViewCalendars(req, res, next){
     let app = this;
-    calendar.getViewableCalendars(app.locals.db, app.locals.user.id, (err, calendars) =>
+    calendar.getViewableCalendars(app.locals.db, res.locals.user.id, (err, calendars) =>
     {
         if(err)
         {
@@ -69,7 +72,7 @@ function handleGetViewCalendars(req, res, next){
 
 function handleAddCalendar(req, res, next){
     let app = this;
-    calendar.addCalendar(app.locals.db, req.body.name, app.locals.user.id, (err) =>
+    calendar.addCalendar(app.locals.db, req.body.name, res.locals.user.id, (err) =>
     {
         if(err)
         {
@@ -85,7 +88,7 @@ function handleAddCalendar(req, res, next){
 
 function handleEditCalendar(req, res, next){
     let app = this;
-    calendar.updateCalendar(app.locals.db, req.body.id, app.locals.user.id, req.body.name, (result) =>
+    calendar.updateCalendar(app.locals.db, req.body.id, res.locals.user.id, req.body.name, (result) =>
     {
         if(result !== null)
         {
@@ -101,7 +104,7 @@ function handleEditCalendar(req, res, next){
 
 function handleDeleteCalendar(req, res, next){
     let app = this;
-    calendar.removeCalendar(app.locals.db, req.body.id, app.locals.user.id, (result) =>
+    calendar.removeCalendar(app.locals.db, req.body.id, res.locals.user.id, (result) =>
     {
         if(result !== null)
         {
@@ -125,7 +128,7 @@ function handleGetUsersWithViewPermissions(req, res, next){
 
 function handleSearchUsers(req, res, next){
     let app = this;
-    user.searchUsers(app.locals.db, app.locals.user.id, req.body.searchTerm, (err, results) =>
+    user.searchUsers(app.locals.db, res.locals.user.id, req.body.searchTerm, (err, results) =>
     {
         if(err)
         {
