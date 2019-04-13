@@ -453,7 +453,8 @@ function removeCalendar(db, calendarID, ownerID, cb)
     db.query(
         `SELECT 1
         FROM users
-        INNER JOIN calendars ON calendars.ownerID = users.uuid
+        INNER JOIN calendars 
+        ON calendars.ownerID = users.uuid
         WHERE users.uuid = ? AND users.userType = 1 AND calendars.calendarID = ?`,
         [ownerID, calendarID], (err, row) =>
         {
@@ -495,9 +496,11 @@ function removeCalendar(db, calendarID, ownerID, cb)
 function getViewers(db, calendarID, cb)
 {
     db.query(
-        `SELECT userID
-        FROM canViewEdit
-        WHERE calendarID = ? and canEdit = FALSE`,
+        `SELECT users.uuid, users.username
+        FROM users
+        INNER JOIN canViewEdit 
+        ON users.uuid = canViewEdit.userID
+        WHERE canViewEdit.calendarID = ? AND canViewEdit.canEdit = FALSE`,
         [calendarID], (err, result) =>
         {
             if (err)
@@ -520,9 +523,11 @@ function getViewers(db, calendarID, cb)
 function getEditors(db, calendarID, cb)
 {
     db.query(
-        `SELECT userID
-        FROM canViewEdit
-        WHERE calendarID = ? and canEdit = TRUE`,
+        `SELECT users.uuid, users.username
+        FROM users
+        INNER JOIN canViewEdit 
+        ON users.uuid = canViewEdit.userID
+        WHERE canViewEdit.calendarID = ? AND canViewEdit.canEdit = TRUE`,
         [calendarID], (err, result) =>
         {
             if (err)
