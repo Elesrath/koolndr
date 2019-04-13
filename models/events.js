@@ -62,7 +62,7 @@ function addEvent(db, calendarID, userID, eventName, startDate, endDate, eventDe
  */
 function getEvents(db, calendarID, userID, rangeBegin, rangeEnd, cb)
 {
-    log.debug("Getting events from calendar " + calendarID + " for user " + userID);
+    log.debug("Getting events from calendar " + calendarID + " for user " + userID + " From " + rangeBegin + " To " + rangeEnd);
     db.query(`
     SELECT 1
     FROM calendars
@@ -87,19 +87,19 @@ function getEvents(db, calendarID, userID, rangeBegin, rangeEnd, cb)
             SELECT events.*
             FROM events
             WHERE events.calendarID = ? AND (events.startDate BETWEEN ? AND ?)`,
-                [calendarID, rangeBegin, rangeEnd], (err, row) =>
-            {
-                if(err)
+                [calendarID, rangeBegin, rangeEnd], (err, result) =>
                 {
-                    cb(err.sqlMessage, null);
-                }
-                else
-                {
-                    cb(null, row);
-                }
-            });
-        }
-    });
+                    if(err)
+                    {
+                        cb(err.sqlMessage, null);
+                    }
+                    else
+                    {
+                        cb(null, result);
+                    }
+                });
+            }
+        });
 }
 
 /**
@@ -136,11 +136,11 @@ function editEvent(db, calendarID, userID, eventID, newStart, newEnd, newName, n
             }
             else
             {
-                cb.query(
+                db.query(
                     `UPDATE events
                     SET startDate = ?, endDate = ?, eventName = ?, eventDescription = ?
                     WHERE eventID = ?`,
-                    [newStart, newEnd, newName, newDescription], (err) =>
+                    [newStart, newEnd, newName, newDescription, eventID], (err) =>
                     {
                         if(err)
                         {
@@ -185,7 +185,7 @@ function removeEvent(db, calendarID, userID, eventID, cb)
             }
             else
             {
-                cb.query(
+                db.query(
                     `DELETE
                     FROM events
                     WHERE eventID = ?`,

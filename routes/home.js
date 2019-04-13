@@ -3,6 +3,7 @@
  */
 
 const calendar = require(`${__rootname}/models/calendar.js`);
+const event = require(`${__rootname}/models/events.js`);
 const user = require(`${__rootname}/models/user.js`);
 const log = require(`${__rootname}/utils/log.js`);
 
@@ -140,6 +141,69 @@ function handleSearchUsers(req, res, next){
     });
 }
 
+function handleAddEvent(req, res, next){
+    let app = this;
+    event.addEvent(app.locals.db, req.body.calendarID, res.locals.user.id, req.body.eventName, req.body.startDate, req.body.endDate, req.body.eventDescription, (result) =>
+    {
+        if(result !== null)
+        {
+            log.debug(result);
+            res.send(result);
+        }
+        else
+        {
+            res.send("success");
+        }
+    });
+}
+
+function handleGetEvents(req, res, next){
+    let app = this;
+    event.getEvents(app.locals.db, req.body.calendarID, res.locals.user.id, req.body.rangeBegin, req.body.rangeEnd, (err, results) =>
+    {
+        if(err)
+        {
+            log.debug(err);
+        }
+        else
+        {
+            res.send(results);
+        }
+    });
+}
+
+function handleEditEvent(req, res, next){
+    let app = this;
+    event.editEvent(app.locals.db, req.body.calendarID, res.locals.user.id, req.body.eventID, req.body.startDate, req.body.endDate, req.body.eventName, req.body.eventDescription, (result) =>
+    {
+        if(result !== null)
+        {
+            log.debug(result);
+            res.send(result);
+        }
+        else
+        {
+            res.send("success");
+        }
+    });
+}
+
+function handleRemoveEvent(req, res, next){
+    let app = this;
+    event.removeEvent(app.locals.db, req.body.calendarID, res.locals.user.id, req.body.eventID, (result) =>
+    {
+        if(result !== null)
+        {
+            log.debug(result);
+            res.send(result);
+        }
+        else
+        {
+            res.send("success");
+        }
+    });
+}
+
 /**
  * Load the routes in this file
  * @function load
@@ -152,12 +216,16 @@ function load(app) {
     app.get('/getOwnCalendars', handleGetOwnCalendars.bind(app));
     app.get('/getViewCalendars', handleGetEditCalendars.bind(app));
     app.get('/getEditCalendars', handleGetViewCalendars.bind(app));
+    app.post('/getEvents', handleGetEvents.bind(app));
     app.post('/addCalendar', handleAddCalendar.bind(app));
     app.post('/editCalendar', handleEditCalendar.bind(app));
     app.post('/deleteCalendar', handleDeleteCalendar.bind(app));
     app.post('/editUsers', handleGetUsersWithEditPermissions.bind(app));
     app.post('/viewUsers', handleGetUsersWithViewPermissions.bind(app));
     app.post('/searchUsers', handleSearchUsers.bind(app));
+    app.post('/addEvent', handleAddEvent.bind(app));
+    app.post('/editEvent', handleEditEvent.bind(app));
+    app.post('/removeEvent', handleRemoveEvent.bind(app));
 }
 
 /**
@@ -175,4 +243,8 @@ module.exports = {
     handleGetUsersWithEditPermissions: handleGetUsersWithEditPermissions,
     handleGetUsersWithViewPermissions: handleGetUsersWithViewPermissions,
     handleSearchUsers: handleSearchUsers,
+    handleAddEvent: handleAddEvent,
+    handleGetEvents: handleGetEvents,
+    handleEditEvent: handleEditEvent,
+    handleRemoveEvent: handleRemoveEvent,
 };

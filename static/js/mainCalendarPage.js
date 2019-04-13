@@ -6,6 +6,9 @@ let calendarsEdit=[];
 let calendarsView=[];
 let userType = 0;
 
+let selectedEvent;
+let eventlist = [];
+
 function addCalendar(calendarName, cb){
     $.post( "/addCalendar", {name: calendarName}, function(result) {
         cb(result);
@@ -85,6 +88,8 @@ function handleCalendarNavClick(id) {
     c.classList.add("sidebar-selected");
 
     selectedCalendar = JSON.parse(id);
+    getEvents(selectedCalendar.id, function(results){
+    });
     if(selectedCalendar.type === "own"){
         selectedCalendarName = calendarsOwn[selectedCalendar.index];
         calendar.setOption('header', {
@@ -122,7 +127,7 @@ function handleAddNewCalendarClick() {
             getOwnCalendars();
             $('#calendarNameInput').val('');
             $('#addNewCalendarModal').modal('hide');
-        }
+        }   
         else{
             alert("Add new calendar failed: " + result );
         }
@@ -183,6 +188,147 @@ function handleSearchUsersClick(){
     }
 }
 
+
+function addEvent(calendarID, eventName, startDate, endDate, eventDescription, cb) {
+    $.post("/addEvent", {calendarID : calendarID, eventName : eventName, startDate: startDate, endDate : endDate, eventDescription : eventDescription}, function(result) {
+        cb(result);
+    });
+}
+
+function editEvent(calendarID, eventID, startDate, endDate, eventName, eventDescription, cb) {
+    $.post("/editEvent", {calendarID : calendarID, eventID : eventID, startDate: startDate, endDate : endDate, eventName: eventName, eventDescription : eventDescription}, function(result) {
+        cb(result);
+    });
+}
+
+function removeEvent(calendarID, eventID, cb) {
+    $.post("/removeEvent", {calendarID : calendarID, eventID : eventID}, function(result) {
+        cb(result);
+    });
+}
+
+function getEvents(calendarID, cb) {
+
+    let starting = new Date();
+    starting = calendar.getDate();
+    starting.setFullYear(starting.getFullYear()-5);
+
+    let ending = new Date();
+    ending = calendar.getDate();
+    ending.setFullYear(ending.getFullYear()+5);
+
+    let rangeBegin = starting.getUTCFullYear() +
+    '-' + pad(starting.getUTCMonth() + 1) +
+    '-' + pad(starting.getUTCDate());
+
+    let rangeEnd = ending.getUTCFullYear() +
+    '-' + pad(ending.getUTCMonth() + 1) +
+    '-' + pad(ending.getUTCDate());
+
+    $.post("/getEvents", {calendarID : calendarID, rangeBegin : rangeBegin, rangeEnd : rangeEnd}, function(events) {
+        
+        let old_events = calendar.getEvents();
+        old_events.forEach(function(event) {
+            event.remove();
+        });
+        
+        eventlist.length = 0;
+        for (let i = 0; i < events.length; i++) {
+            let inst = {};
+            inst.id = events[i].eventID;
+            inst.calendarID = events[i].calendarID;
+            inst.start = events[i].startDate;
+            inst.end = events[i].endDate;
+            inst.title = events[i].eventName;
+            inst.description = events[i].eventDescription;
+            eventlist.push(inst);
+        }
+
+        eventlist.forEach(function(event) {
+            calendar.addEvent(event);
+        });
+
+        cb(events);
+    });
+}
+
+function handleAddEventClick() {
+    let eventName = $.trim($('#eventNameInput').val());
+    if (eventName === '') {
+        alert('Event name can not be left blank');
+        return false;
+    }
+    let eventStart = $.trim($('#eventStartDate').val());
+    let eventEnd = $.trim($('#eventEndDate').val());
+    let eventDescription = $.trim($('#eventDescription').val());
+
+    addEvent(selectedCalendar.id, eventName, eventStart, eventEnd, eventDescription, function (result) {
+        if (result === "success") {
+            getEvents(selectedCalendar.id, function(results){
+            });
+            $('#eventNameInput').val('');
+            $('#eventStartDate').val('');
+            $('#eventEndDate').val('');
+            $('#eventDescription').val('');
+            $('#addEventModal').modal('hide');
+        }
+        else {
+            alert("Creating event failed: " + result);
+        }
+    });
+}
+
+function handleEditEventClick() {
+    let eventName = $.trim($('#eventNewName').val());
+    if (eventName === '') {
+        alert('Event name can not be left blank');
+        return false;
+    }
+    let eventStart = $.trim($('#eventNewStart').val());
+    let eventEnd = $.trim($('#eventNewEnd').val());
+    let eventDescription = $.trim($('#eventNewDescription').val());
+
+    let eventID = selectedEvent.id;
+
+    editEvent(selectedCalendar.id, eventID, eventStart, eventEnd, eventName, eventDescription, function (result) {
+        if (result === "success") {
+            getEvents(selectedCalendar.id, function(results){
+            });
+            $('#eventNewName').val('');
+            $('#eventNewStart').val('');
+            $('#eventNewEnd').val('');
+            $('#eventNewDescription').val('');
+            $('#editEventModal').modal('hide');
+        }
+        else {
+            alert("Editing event failed: " + result);
+        }
+    });
+}
+
+function handleDeleteEventClick() {
+
+    let eventID = selectedEvent.id;
+
+    removeEvent(selectedCalendar.id, eventID, function (result) {
+        if(result === "success"){
+            getEvents(selectedCalendar.id, function(results){
+            });
+            $('#editEventModal').modal('hide');
+        }
+        else{
+            alert("Delete event failed: " + result );
+        }
+    });
+}
+
+function pad(number) {
+    if (number < 10) {
+        return '0' + number;
+    }
+    return number;
+}
+
 $(document).ready(function() {
     userType = $("input[name='user-userType']").val();
     if(userType){
@@ -225,16 +371,57 @@ $(document).ready(function() {
             center: 'title',
             right: 'today, prev,next',
         },
-        dateClick: function (info) {
-            alert('Clicked on: ' + info.dateStr);
-        },
-        events: function(start, end, timezone, callback) {
+        editable: true,
+        eventLimit: 4,
+        selectable: true,
+        select: function(selectionInfo) {
+            let starting = selectionInfo.start;
+            let ending = selectionInfo.end;
+            ending.setDate(ending.getDate() - 1);
 
+            let starting_str = starting.getUTCFullYear() +
+            '-' + pad(starting.getUTCMonth() + 1) +
+            '-' + pad(starting.getUTCDate());
+
+            let ending_str = ending.getUTCFullYear() +
+            '-' + pad(ending.getUTCMonth() + 1) +
+            '-' + pad(ending.getUTCDate());
+
+            $("#addEventModal").modal('show');
+            $("#eventStartDate").val(starting_str);
+            $("#eventEndDate").val(ending_str);
         },
+        eventClick: function(info) {
+            selectedEvent = info.event;
+            info.jsEvent.preventDefault();                      // don't let the browser navigate by default
+
+            let starting = selectedEvent.start;
+            let ending;
+            if (selectedEvent.end) {
+                ending = selectedEvent.end;
+            } else {
+                ending = selectedEvent.start;
+            }
+
+            let starting_str = starting.getUTCFullYear() +
+            '-' + pad(starting.getUTCMonth() + 1) +
+            '-' + pad(starting.getUTCDate());
+
+            let ending_str = ending.getUTCFullYear() +
+            '-' + pad(ending.getUTCMonth() + 1) +
+            '-' + pad(ending.getUTCDate());
+            
+            $("#editEventModalTitle").text("Edit Event: " + selectedEvent.title);
+            $("#editEventModal").modal('show');
+            $("#eventNewStart").val(starting_str);
+            $("#eventNewEnd").val(ending_str);
+        },
+        eventDropInfo: function(info) {
+
+        }
     });
 
     calendar.render();
-
 
     let editCalendarNameInput = document.getElementById("editCalendarNameInput");
     let shareCalendarSearchInput = document.getElementById("shareCalendarSearchInput");
