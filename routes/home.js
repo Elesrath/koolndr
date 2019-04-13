@@ -156,15 +156,15 @@ function handleAddEvent(req, res, next){
 
 function handleGetEvents(req, res, next){
     let app = this;
-    event.getEvent(app.locals.db, req.body.calendarID, app.locals.user.id, req.body.startDate, req.body.endDate, (err, res) =>
+    event.getEvents(app.locals.db, req.body.calendarID, app.locals.user.id, req.body.rangeBegin, req.body.rangeEnd, (err, results) =>
     {
         if(err)
         {
-            log.debug(err);
+            log.debug(result);
         }
         else
         {
-            res.send(res);
+            res.send(results);
         }
     });
 }
@@ -213,7 +213,7 @@ function load(app) {
     app.get('/getOwnCalendars', handleGetOwnCalendars.bind(app));
     app.get('/getViewCalendars', handleGetEditCalendars.bind(app));
     app.get('/getEditCalendars', handleGetViewCalendars.bind(app));
-    app.get('/getEvents', handleGetEvents.bind(app));
+    app.post('/getEvents', handleGetEvents.bind(app));
     app.post('/addCalendar', handleAddCalendar.bind(app));
     app.post('/editCalendar', handleEditCalendar.bind(app));
     app.post('/deleteCalendar', handleDeleteCalendar.bind(app));

@@ -62,7 +62,7 @@ function addEvent(db, calendarID, userID, eventName, startDate, endDate, eventDe
  */
 function getEvents(db, calendarID, userID, rangeBegin, rangeEnd, cb)
 {
-    log.debug("Getting events from calendar " + calendarID + " for user " + userID);
+    log.debug("Getting events from calendar " + calendarID + " for user " + userID + " From " + rangeBegin + " To " + rangeEnd);
     db.query(`
     SELECT 1
     FROM calendars

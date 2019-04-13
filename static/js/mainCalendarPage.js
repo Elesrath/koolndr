@@ -88,6 +88,9 @@ function handleCalendarNavClick(id) {
     c.classList.add("sidebar-selected");
 
     selectedCalendar = JSON.parse(id);
+    getEvents(selectedCalendar.id, function(results){
+        alert(results);
+    });
     if(selectedCalendar.type === "own"){
         selectedCalendarName = calendarsOwn[selectedCalendar.index];
         calendar.setOption('header', {
@@ -205,15 +208,18 @@ function removeEvent(calendarID, eventID, cb) {
     });
 }
 
-function getEvents(calendarID, rangeBegin, rangeEnd, cb) {
-    $.get("/getEvents", {calendarID : calendarID, rangeBegin:rangeBegin, rangeEnd: rangeEnd}, function(events) {
-        eventlist.length = 0;
-        let c;
-        for (let i = 0; i < events.length; i++)
-            eventlist.push(events[i].name);
-            c = JSON.stringify({index: i, id: events[i].eventID});
-            console.log(c);
-        cb(true);
+function getEvents(calendarID, cb) {
+
+    var rangeBegin = new Date();
+    rangeBegin = calendar.getDate();
+    rangeBegin.setMonth(rangeBegin.getMonth()-2);
+
+    var rangeEnd = new Date();
+    rangeEnd = calendar.getDate();
+    rangeEnd.setMonth(rangeEnd.getMonth()+2);
+
+    $.post("/getEvents", {calendarID : calendarID, rangeBegin : rangeBegin, rangeEnd : rangeEnd}, function(events) {
+        cb(events);
     });
 }
 
@@ -229,8 +235,9 @@ function handleAddEventClick() {
 
     addEvent(selectedCalendar.id, eventName, eventStart, eventEnd, eventDescription, function (result) {
         if (result === "success") {
-            let start_date = new Date(eventStart);
-            let end_date = new Date(eventEnd);
+            getEvents(selectedCalendar.id, function(results){
+                alert(results);
+            });
             $('#eventNameInput').val('');
             $('#eventStartDate').val('');
             $('#eventEndDate').val('');
@@ -243,7 +250,7 @@ function handleAddEventClick() {
     });
 }
 
-function handleEditEventClick() {
+function handleEditEventClick(eventID) {
     let eventName = $.trim($('#eventNewName').val());
     if (eventName === '') {
         alert('Event name can not be left blank');
@@ -253,7 +260,7 @@ function handleEditEventClick() {
     let eventEnd = $.trim($('#eventNewEnd').val());
     let eventDescription = $.trim($('#eventNewDescription').val());
 
-    editEvent(selectedCalendar.id, eventStart, eventEnd, eventName, eventDescription, function (result) {
+    editEvent(selectedCalendar.id, eventID, eventStart, eventEnd, eventName, eventDescription, function (result) {
         if (result === "success") {
             $('#eventNewName').val('');
             $('#eventNewStart').val('');
@@ -267,8 +274,8 @@ function handleEditEventClick() {
     });
 }
 
-function handleDeleteEventClick() {
-    deleteEvent(selectedCalendar.id, function (result) {
+function handleDeleteEventClick(eventID) {
+    removeEvent(selectedCalendar.id, eventID, function (result) {
         if(result === "success"){
             $('#deleteEventModal').modal('hide');
         }
@@ -276,6 +283,13 @@ function handleDeleteEventClick() {
             alert("Delete event failed: " + result );
         }
     });
+}
+
+function pad(number) {
+    if (number < 10) {
+        return '0' + number;
+    }
+    return number;
 }
 
 $(document).ready(function() {
@@ -320,90 +334,52 @@ $(document).ready(function() {
             center: 'title',
             right: 'today, prev,next',
         },
-        events: function(fetchInfo, successCallback, failureCallback) {
-/*             getEvents(selectedCalendar.id, fetchInfo.start.valueOf(), fetchInfo.valueOf(), function (res) {
-                if (events) {
-                    successCallback (
-                        Array.prototype.slice.call( // convert to array
-                            res.getElementsByTagName('event')
-                        ).map(function(eventEl) {
-                            return {
-                                title: eventEl.getAttribute('title'),
-                                start: eventEl.getAttribute('start')
-                            }
-                        })
-                    )
-                } else {
-                    failureCallback(events);
-                }
-            }); */
-        },
         editable: true,
         eventLimit: true,
         eventResizableFromStart: true,
         eventDurationEditable: true,
         selectable: true,
         select: function(selectionInfo) {
-            selectionInfo.allDay = !(selectionInfo.allDay);
-            
-            let start_month = (selectionInfo.start.getMonth()+1).toString();
-            start_month = ("0" + start_month).slice(-2);
+            let starting = selectionInfo.start;
+            let ending = selectionInfo.end;
+            ending.setDate(ending.getDate() - 1);
 
-            let start_day = (selectionInfo.start.getDate()).toString();
-            start_day = ("0" + start_day).slice(-2);
+            let starting_str = starting.getUTCFullYear() +
+            '-' + pad(starting.getUTCMonth() + 1) +
+            '-' + pad(starting.getUTCDate());
 
-            let end_year = selectionInfo.end.getFullYear();
-            let end_month = selectionInfo.end.getMonth()+1;
-            let end_day = selectionInfo.end.getDate();
-
-            if (end_day !== 1) {
-                end_day -=1;
-            } else {
-                let months1 = [2, 4, 6, 8, 9, 11];
-                let months2 = [5, 7, 10, 12];
-                if (months1.includes(end_month)) {
-                    end_day = 31;
-                    end_month -=1;
-                } else if (months2.includes(end_month)) {
-                    end_day = 30;
-                    end_month -=1;
-                } else if (end_month === 3) {
-                    end_day = 27;
-                    end_month -=1;
-                } else if (end_month === 1) {
-                    end_year -=1;
-                    end_month = 12;
-                    end_day = 31;
-                }
-            }
-
-            end_year = end_year.toString();
-            end_month = end_month.toString();
-            end_day = end_day.toString();
-
-            end_month = ("0" + end_month).slice(-2);
-            end_day = ("0" + end_day).slice(-2);
-
-            let starting = (selectionInfo.start.getFullYear()).toString() + '-' + start_month + '-' + start_day;
-            let ending = end_year.toString() + "-" + end_month + '-' + end_day;
+            let ending_str = ending.getUTCFullYear() +
+            '-' + pad(ending.getUTCMonth() + 1) +
+            '-' + pad(ending.getUTCDate());
 
             $("#addEventModal").modal('show');
-            $("#eventStartDate").val(starting);
-            $("#eventEndDate").val(ending);
+            $("#eventStartDate").val(starting_str);
+            $("#eventEndDate").val(ending_str);
         },
         eventClick: function(info) {
             selectedEvent = info.event;
             info.jsEvent.preventDefault();                      // don't let the browser navigate by default
+            
+            let starting = selectedEvent.start;
+            let ending = selectedEvent.end;
+            ending.setDate(ending.getDate() - 1);
+
+            let starting_str = starting.getUTCFullYear() +
+            '-' + pad(starting.getUTCMonth() + 1) +
+            '-' + pad(starting.getUTCDate());
+
+            let ending_str = ending.getUTCFullYear() +
+            '-' + pad(ending.getUTCMonth() + 1) +
+            '-' + pad(ending.getUTCDate());
+            
             $("#editEventModalTitle").text("Edit Event: " + selectedEvent.title);
             $("#editEventModal").modal('show');
+            $("#eventNewStart").val(starting_str);
+            $("#eventNewEnd").val(ending_str);
         },
-        events: function() {
-            
-        }
     });
 
     calendar.render();
-
 
     let editCalendarNameInput = document.getElementById("editCalendarNameInput");
     let shareCalendarSearchInput = document.getElementById("shareCalendarSearchInput");
