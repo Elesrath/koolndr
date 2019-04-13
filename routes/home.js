@@ -143,7 +143,7 @@ function handleSearchUsers(req, res, next){
 
 function handleAddEvent(req, res, next){
     let app = this;
-    event.addEvent(app.locals.db, req.body.calendarID, app.locals.user.id, req.body.eventName, req.body.startDate, req.body.endDate, req.body.eventDescription, (result) =>
+    event.addEvent(app.locals.db, req.body.calendarID, res.locals.user.id, req.body.eventName, req.body.startDate, req.body.endDate, req.body.eventDescription, (result) =>
     {
         if(result !== null)
         {
@@ -159,11 +159,11 @@ function handleAddEvent(req, res, next){
 
 function handleGetEvents(req, res, next){
     let app = this;
-    event.getEvents(app.locals.db, req.body.calendarID, app.locals.user.id, req.body.rangeBegin, req.body.rangeEnd, (err, results) =>
+    event.getEvents(app.locals.db, req.body.calendarID, res.locals.user.id, req.body.rangeBegin, req.body.rangeEnd, (err, results) =>
     {
         if(err)
         {
-            log.debug(result);
+            log.debug(err);
         }
         else
         {
@@ -174,7 +174,7 @@ function handleGetEvents(req, res, next){
 
 function handleEditEvent(req, res, next){
     let app = this;
-    event.editEvent(app.locals.db, req.body.calendarID, app.locals.user.id, req.body.eventID, req.body.startDate, req.body.endDate, req.body.eventName, req.body.eventDescription, (result) =>
+    event.editEvent(app.locals.db, req.body.calendarID, res.locals.user.id, req.body.eventID, req.body.startDate, req.body.endDate, req.body.eventName, req.body.eventDescription, (result) =>
     {
         if(result !== null)
         {
@@ -190,7 +190,7 @@ function handleEditEvent(req, res, next){
 
 function handleRemoveEvent(req, res, next){
     let app = this;
-    event.removeEvent(app.locals.db, req.body.calendarID, app.locals.user.id, req.body.id, (result) =>
+    event.removeEvent(app.locals.db, req.body.calendarID, res.locals.user.id, req.body.eventID, (result) =>
     {
         if(result !== null)
         {

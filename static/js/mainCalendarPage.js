@@ -89,7 +89,6 @@ function handleCalendarNavClick(id) {
 
     selectedCalendar = JSON.parse(id);
     getEvents(selectedCalendar.id, function(results){
-        alert(results);
     });
     if(selectedCalendar.type === "own"){
         selectedCalendarName = calendarsOwn[selectedCalendar.index];
@@ -196,8 +195,8 @@ function addEvent(calendarID, eventName, startDate, endDate, eventDescription, c
     });
 }
 
-function editEvent(calendarID, eventID, startDate, endDate, eventName, description, cb) {
-    $.post("/editEvent", {calendarID : calendarID, eventID : eventID, startDate: startDate, endDate : endDate, eventName: eventName, description : description}, function(result) {
+function editEvent(calendarID, eventID, startDate, endDate, eventName, eventDescription, cb) {
+    $.post("/editEvent", {calendarID : calendarID, eventID : eventID, startDate: startDate, endDate : endDate, eventName: eventName, eventDescription : eventDescription}, function(result) {
         cb(result);
     });
 }
@@ -210,15 +209,46 @@ function removeEvent(calendarID, eventID, cb) {
 
 function getEvents(calendarID, cb) {
 
-    var rangeBegin = new Date();
-    rangeBegin = calendar.getDate();
-    rangeBegin.setMonth(rangeBegin.getMonth()-2);
+    let starting = new Date();
+    starting = calendar.getDate();
+    starting.setMonth(starting.getMonth()-2);
 
-    var rangeEnd = new Date();
-    rangeEnd = calendar.getDate();
-    rangeEnd.setMonth(rangeEnd.getMonth()+2);
+    let ending = new Date();
+    ending = calendar.getDate();
+    ending.setMonth(ending.getMonth()+2);
+
+    let rangeBegin = starting.getUTCFullYear() +
+    '-' + pad(starting.getUTCMonth() + 1) +
+    '-' + pad(starting.getUTCDate());
+
+    let rangeEnd = ending.getUTCFullYear() +
+    '-' + pad(ending.getUTCMonth() + 1) +
+    '-' + pad(ending.getUTCDate());
 
     $.post("/getEvents", {calendarID : calendarID, rangeBegin : rangeBegin, rangeEnd : rangeEnd}, function(events) {
+        
+        let old_events = calendar.getEvents();
+        old_events.forEach(function(event) {
+            event.remove();
+        });
+        
+        eventlist.length = 0;
+        for (let i = 0; i < events.length; i++) {
+            let inst = {};
+            inst.id = events[i].eventID;
+            inst.calendarID = events[i].calendarID;
+            inst.start = events[i].startDate;
+            inst.end = events[i].endDate;
+            inst.title = events[i].eventName;
+            inst.description = events[i].eventDescription;
+            eventlist.push(inst);
+        }
+
+        eventlist.forEach(function(event) {
+            calendar.addEvent(event);
+            console.log(event);
+        });
+
         cb(events);
     });
 }
@@ -236,7 +266,6 @@ function handleAddEventClick() {
     addEvent(selectedCalendar.id, eventName, eventStart, eventEnd, eventDescription, function (result) {
         if (result === "success") {
             getEvents(selectedCalendar.id, function(results){
-                alert(results);
             });
             $('#eventNameInput').val('');
             $('#eventStartDate').val('');
@@ -250,7 +279,7 @@ function handleAddEventClick() {
     });
 }
 
-function handleEditEventClick(eventID) {
+function handleEditEventClick() {
     let eventName = $.trim($('#eventNewName').val());
     if (eventName === '') {
         alert('Event name can not be left blank');
@@ -260,8 +289,12 @@ function handleEditEventClick(eventID) {
     let eventEnd = $.trim($('#eventNewEnd').val());
     let eventDescription = $.trim($('#eventNewDescription').val());
 
+    let eventID = selectedEvent.id;
+
     editEvent(selectedCalendar.id, eventID, eventStart, eventEnd, eventName, eventDescription, function (result) {
         if (result === "success") {
+            getEvents(selectedCalendar.id, function(results){
+            });
             $('#eventNewName').val('');
             $('#eventNewStart').val('');
             $('#eventNewEnd').val('');
@@ -274,10 +307,15 @@ function handleEditEventClick(eventID) {
     });
 }
 
-function handleDeleteEventClick(eventID) {
+function handleDeleteEventClick() {
+
+    let eventID = selectedEvent.id;
+
     removeEvent(selectedCalendar.id, eventID, function (result) {
         if(result === "success"){
-            $('#deleteEventModal').modal('hide');
+            getEvents(selectedCalendar.id, function(results){
+            });
+            $('#editEventModal').modal('hide');
         }
         else{
             alert("Delete event failed: " + result );
@@ -335,9 +373,7 @@ $(document).ready(function() {
             right: 'today, prev,next',
         },
         editable: true,
-        eventLimit: true,
-        eventResizableFromStart: true,
-        eventDurationEditable: true,
+        eventLimit: 4,
         selectable: true,
         select: function(selectionInfo) {
             let starting = selectionInfo.start;
@@ -362,7 +398,7 @@ $(document).ready(function() {
             
             let starting = selectedEvent.start;
             let ending = selectedEvent.end;
-            ending.setDate(ending.getDate() - 1);
+            ending.setDate(ending.getDate());
 
             let starting_str = starting.getUTCFullYear() +
             '-' + pad(starting.getUTCMonth() + 1) +
@@ -377,6 +413,9 @@ $(document).ready(function() {
             $("#eventNewStart").val(starting_str);
             $("#eventNewEnd").val(ending_str);
         },
+        eventDropInfo: function(info) {
+
+        }
     });
 
     calendar.render();
