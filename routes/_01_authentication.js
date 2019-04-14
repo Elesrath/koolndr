@@ -8,7 +8,7 @@ const log = require(`${__rootname}/utils/log.js`);
 
 const user = require(`${__rootname}/models/user.js`);
 
-let unauthenticatedPages = /^\/(login|newaccount|forgotpassword)\/?$/;
+let unauthenticatedPages = /^\/(login|newaccount|forgotpassword|registerUser)\/?$/;
 
 module.exports = {
     load: function(app) {

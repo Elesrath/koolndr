@@ -14,7 +14,7 @@ let eventlist = [];
 // }
 function registerUser(registerUsername, registerPassword, registerEmail, cb) {
     console.log(registerUsername);
-    $.post("/changeUserType", { username: registerUsername, password: registerPassword, email: registerEmail }, function (result) {
+    $.post("/registerUser", { username: registerUsername, password: registerPassword, email: registerEmail }, function (result) {
         console.log(result);
         cb(result);
     });
