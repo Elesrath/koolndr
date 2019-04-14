@@ -121,7 +121,7 @@ function handleLoginAttempt(req, res, next) {
  */
 function handleNewAccount(req, res, next) {
     let app = this;
-    app.locals.db.query('SELECT LOWER(username) FROM USERS', (err, rows) => {
+    app.locals.db.query('SELECT LOWER(username) FROM users', (err, rows) => {
         if (err) {
             log.error(err);
             res.render('login', {
