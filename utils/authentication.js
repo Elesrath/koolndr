@@ -90,7 +90,7 @@ function createUser(db, username, password, email, cb) {
                 username.toLowerCase(),
                 hash,
                 email,
-                1
+                0
             ], (err) => {
                 if (err) {
                     cb(err);
