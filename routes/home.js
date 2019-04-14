@@ -50,6 +50,28 @@ function handleChangeUserType(req, res, next){
     });
 }
 
+//function updateUserInfo(db, userID, newName, newPassword, newEmail, cb)
+
+function handleChangeUserInfo(req,res,next){
+    let app = this;
+
+    log.debug("attempting to change password to: "+req.body.newPassword);
+
+    user.updateUserInfo(app.locals.db, res.locals.user.id,res.locals.user.username, req.body.newPassword,res.locals.user.email, (result) =>
+    {
+        if(result !== null)
+        {
+            log.debug(result);
+            res.send(result);
+        }
+        else
+        {
+            log.debug("succesfully changed password to: "+req.body.newPassword)
+            res.send("success");
+        }
+    });
+}
+
 function handleGetOwnCalendars(req, res, next){
     let app = this;
     calendar.getOwnedCalendars(app.locals.db, res.locals.user.id, (err, calendars) =>
@@ -327,6 +349,7 @@ function load(app) {
     app.post('/removeEvent', handleRemoveEvent.bind(app));
 
     app.post('/changeUserType', handleChangeUserType.bind(app));
+    app.post('/changeUserInfo', handleChangeUserInfo.bind(app));
 }
 
 /**
@@ -357,4 +380,5 @@ module.exports = {
     handleRemoveEvent: handleRemoveEvent,
 
     handleChangeUserType: handleChangeUserType,
+    handleChangeUserInfo: handleChangeUserInfo,
 };
