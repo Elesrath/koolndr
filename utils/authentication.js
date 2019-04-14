@@ -190,11 +190,11 @@ function pruneSessions(db, cb) {
  * @function deleteSession
  * @memberof utils.authentication
  * @param {WrappedDBConnection} db - the connected database
- * @param {string} session - the session to delete
+ * @param {string} user - the user to unauthenticate
  * @callback [cb] - an optional callback taking (err)
  */
 function deleteSession(db, session, cb) {
-    db.query('DELETE FROM sessioncookie WHERE token = ?;', [session], (err) => {
+    db.query('DELETE FROM sessioncookie WHERE user = ?;', [session], (err) => {
         if (err) {
             if (cb) {
                 cb(err);
