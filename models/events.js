@@ -70,7 +70,7 @@ function getEvents(db, calendarID, userID, rangeBegin, rangeEnd, cb)
     UNION 
     SELECT 1
     FROM canViewEdit
-    WHERE (canViewEdit.calendarID = ? AND canViewEdit.userID = ? AND canViewEdit.canEdit = TRUE)`,
+    WHERE (canViewEdit.calendarID = ? AND canViewEdit.userID = ?)`,
         [calendarID, userID, calendarID, userID], (err, row) =>
     {
         if(err)
