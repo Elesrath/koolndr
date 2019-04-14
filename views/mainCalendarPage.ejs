@@ -112,40 +112,60 @@
                 </div>
                 <div class="modal-body">
                     <form>
-                        <p>Username: <%= res.locals.user.username %></p>
-                        <p>Email: <%= res.locals.user.email %></p>
-                        <p>Account Type:
+                        <h5>Username: <%= res.locals.user.username %></h5>
+                        <h5>Email: <%= res.locals.user.email %></h5>
+                        <h5>Account Type:
                                 <% if(res.locals.user.userType){ %>
                                     Premium User
                                     <% } else{ %>
                                     Non-premium User
                                     <% } %>
-                        </p>
+                        </h5>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button id="updateAccountButton" class="btn btn-primary" type="submit" onclick="handleUpdateAccountClick();return false;">Update Account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Update Account Modal-->
+    <div class="modal fade" id="updateAccountModal" tabindex="-1" role="dialog" aria-labelledby="updateAccountModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Account</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
                         <div class="form-label-group">
-                            <input id="passwordInput1" class="form-control" maxlength="30" required="required" autofocus="autofocus" type="password">
-                            <label for="passwordInput1">Your password</label>
+                                <input id="new_username" class="form-control" maxlength="30" autofocus="autofocus">
+                                <label for="new_username">New Username</label>
                         </div>
                         <div class="form-label-group">
-                            <input id="passwordInput2" class="form-control" maxlength="30" required="required" autofocus="autofocus" type="password">
-                            <label for="passwordInput2">Verify password</label>
+                                <input type="password" id="new_password" class="form-control" maxlength="30">
+                                <label for="new_password">New Password</label>
                         </div>
                         <div class="form-label-group">
-                            <input id="newPasswordInput" class="form-control" maxlength="30" required="required" autofocus="autofocus" type="password">
-                            <label for="newPasswordInput">New password</label>
+                                <input id="new_email" class="form-control" maxlength="30">
+                                <label for="new_email">New e-mail</label>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <button id="changeUserTypeButton" class="btn btn-primary" type="submit" onclick="handleChangeUserTypeClick();return false;">
-                            <% if(res.locals.user.userType){ %>
-                                Downgrade Account
-                                <% } else{ %>
-                                Upgrade Account
-                                <% } %>
+                    <button id="changeUserTypeButton" class="btn btn-primary" type="submit" onclick="handleChangeUserTypeClick();return false;">                            <% if(res.locals.user.userType){ %>
+                        Downgrade Account
+                        <% } else{ %>
+                        Upgrade Account
+                        <% } %>
                     </button>
-
-                    <button id="changeUserInfoButton" class="btn btn-primary" type="submit" onclick="handleUpdateUser();return false;">Update Account</button>
+                    <button id="changeUserInfoButton" class="btn btn-primary" type="submit" onclick="handleChangeUserInfoClick();return false;">Update Account</button>
                 </div>
             </div>
         </div>

@@ -56,9 +56,21 @@ function handleChangeUserType(req, res, next){
 function handleChangeUserInfo(req,res,next){
     let app = this;
 
-    log.debug("attempting to change password to: "+req.body.newPassword);
+    let username = req.body.new_username;
+    let password = req.body.new_password;
+    let email = req.body.new_email;
 
-    user.updateUserInfo(app.locals.db, res.locals.user.id,res.locals.user.username, req.body.newPassword,res.locals.user.email, (result) =>
+    if (!username) {
+        username = res.locals.user.username;
+    }
+    if (!password) {
+        password = res.locals.user.password;
+    }
+    if (!email) {
+        email = res.locals.user.email;
+    }
+
+    user.updateUserInfo(app.locals.db, res.locals.user.id, username, password, email, (result) =>
     {
         if(result !== null)
         {
@@ -67,11 +79,11 @@ function handleChangeUserInfo(req,res,next){
         }
         else
         {
-            log.debug("succesfully changed password to: "+req.body.newPassword)
             res.send("success");
         }
     });
 }
+
 
 function handleGetOwnCalendars(req, res, next){
     let app = this;

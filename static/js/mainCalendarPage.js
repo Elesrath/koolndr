@@ -13,37 +13,42 @@ let eventlist = [];
 //     });
 // }
 
-function handleUpdateUser() {
-    let pass1 = $.trim($('#passwordInput1').val());
+function handleUpdateAccountClick() {
+    $('#myAccountModal').modal('hide');
+    $('#updateAccountModal').modal('show');
+}
 
-    let pass2 = $.trim($('#passwordInput2').val());
-    let passNew = $.trim($('#newPasswordInput').val());
-
-    if (pass1 !== pass2) {
-        alert("Original passwords don't match!");
-        return false;
-    }
-
-    if (passNew.length < 3) {
-        alert("new password must exceed minimum length 3!");
-        return false;
-    }
-
-
-    changeUserInfo(passNew, function (result) {
+function handleChangeUserTypeClick() {
+    changeUserType(userType, function (result) {
         if (result === "success") {
-            $('#myAccountModal').modal('hide');
+            $('#updateAccountModal').modal('hide');
+            window.location.reload();
         }
         else {
-            alert("Password change failed: " + result);
+            alert("Changing user type failed: " + result);
         }
     });
 }
 
-//newName, newPassword, newEmail
+function handleChangeUserInfoClick() {
+    let new_username = String($.trim($('#new_username').val()));
+    let new_password = String($.trim($('#new_password').val()));
+    let new_email = String($.trim($('#new_email').val()));
 
-function changeUserInfo(newPassword, cb) {
-    $.post("/changeUserInfo", { newPassword: newPassword }, function (result) {
+    console.log(new_username, new_password, new_email);
+    changeUserInfo(new_username, new_password, new_email, function (result) {
+        if (result === "success") {
+            $('#updateAccountModal').modal('hide');
+            window.location.reload();
+        }
+        else {
+            alert("User Info change failed: " + result);
+        }
+    });
+}
+
+function changeUserInfo(new_username, new_password, new_email, cb) {
+    $.post("/changeUserInfo", { new_username : new_username, new_password : new_password, new_email : new_email }, function (result) {
         cb(result);
     });
 }
@@ -53,19 +58,6 @@ function changeUserType(userType, cb) {
         cb(result);
     });
 }
-
-function handleChangeUserTypeClick() {
-    changeUserType(userType, function (result) {
-        if (result === "success") {
-            $('#myAccountModal').modal('hide');
-            window.location.reload();
-        }
-        else {
-            alert("Changing user type failed: " + result);
-        }
-    });
-}
-
 
 function addCalendar(calendarName, cb) {
     $.post("/addCalendar", { name: calendarName }, function (result) {
