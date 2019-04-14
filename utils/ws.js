@@ -102,6 +102,13 @@ function handleWs(ws, res) {
     app.locals.clients.push(new Connection(app, ws, res.res));
 }
 
+/**
+ * Propogate the event where a user adds a calendar
+ * @function userAddedCalendar
+ * @memberof utils.ws
+ * @param {ExpressApp} app - the express app
+ * @param {string} userID - the id of the user that added the calendar
+ */
 function userAddedCalendar(app, userID) {
     for (let client of app.locals.clients) {
         if (client.user.id === userID) {
@@ -112,6 +119,14 @@ function userAddedCalendar(app, userID) {
     }
 }
 
+/**
+ * Propogate the event where a user edits a calendar
+ * @function userEditedCalendar
+ * @memberof utils.ws
+ * @param {ExpressApp} app - the express app
+ * @param {string} initiatingUser - the id of the user that edited the calendar
+ * @param {string} calendarID - the id of the calendar
+ */
 function userEditedCalendar(app, initiatingUser, calendarID) {
     calendar.getViewersAndEditors(app.locals.db, calendarID, (err, users) => {
         if (err) {
@@ -130,6 +145,14 @@ function userEditedCalendar(app, initiatingUser, calendarID) {
     });
 }
 
+/**
+ * Propogate the event where a user deletes a calendar
+ * @function userDeletedCalendar
+ * @memberof utils.ws
+ * @param {ExpressApp} app - the express app
+ * @param {string} initiatingUser - the id of the user that deleted the calendar
+ * @param {string} calendarID - the id of the calendar
+ */
 function userDeletedCalendar(app, initiatingUser, users, calendarID) {
     for (let client of app.locals.clients) {
         if (client.user.id !== initiatingUser && users.indexOf(client.user.id) !== -1) {
@@ -141,6 +164,14 @@ function userDeletedCalendar(app, initiatingUser, users, calendarID) {
     }
 }
 
+/**
+ * Propogate the event where a user allows another user to edit
+ * @function userEditedCalendar
+ * @memberof utils.ws
+ * @param {ExpressApp} app - the express app
+ * @param {string} calendarID - the id of the calendar
+ * @param {string} userID - the id of the user that can now edit
+ */
 function allowCalendarEdit(app, calendarID, userID) {
     for (let client of app.locals.clients) {
         if (client.user.id === userID) {
@@ -152,6 +183,14 @@ function allowCalendarEdit(app, calendarID, userID) {
     }
 }
 
+/**
+ * Propogate the event where a user allows another user to view
+ * @function userEditedCalendar
+ * @memberof utils.ws
+ * @param {ExpressApp} app - the express app
+ * @param {string} calendarID - the id of the calendar
+ * @param {string} userID - the id of the user that can now view
+ */
 function allowCalendarView(app, calendarID, userID) {
     for (let client of app.locals.clients) {
         if (client.user.id === userID) {
@@ -163,6 +202,14 @@ function allowCalendarView(app, calendarID, userID) {
     }
 }
 
+/**
+ * Propogate the event where a user disallows another user to edit and view
+ * @function userEditedCalendar
+ * @memberof utils.ws
+ * @param {ExpressApp} app - the express app
+ * @param {string} calendarID - the id of the calendar
+ * @param {string} userID - the id of the user that can no longer edit
+ */
 function revokePerms(app, calendarID, userID) {
     for (let client of app.locals.clients) {
         if (client.user.id === userID) {
@@ -174,6 +221,14 @@ function revokePerms(app, calendarID, userID) {
     }
 }
 
+/**
+ * Propogate the event where a user adds an event
+ * @function userEditedCalendar
+ * @memberof utils.ws
+ * @param {ExpressApp} app - the express app
+ * @param {string} initiatingUser - the id of the user that added the event
+ * @param {string} calendarID - the id of the calendar the event belongs to
+ */
 function userAddedEvent(app, initiatingUser, calendarID) {
     for (let client of app.locals.clients) {
         if (client.user.id !== initiatingUser) {
@@ -185,6 +240,14 @@ function userAddedEvent(app, initiatingUser, calendarID) {
     }
 }
 
+/**
+ * Propogate the event where a user edits an event
+ * @function userEditedCalendar
+ * @memberof utils.ws
+ * @param {ExpressApp} app - the express app
+ * @param {string} initiatingUser - the id of the user that edited the event
+ * @param {string} calendarID - the id of the calendar the event belongs to
+ */
 function userEditedEvent(app, initiatingUser, calendarID) {
     for (let client of app.locals.clients) {
         if (client.user.id !== initiatingUser) {
@@ -196,6 +259,14 @@ function userEditedEvent(app, initiatingUser, calendarID) {
     }
 }
 
+/**
+ * Propogate the event where a user deletes an event
+ * @function userEditedCalendar
+ * @memberof utils.ws
+ * @param {ExpressApp} app - the express app
+ * @param {string} initiatingUser - the id of the user that deleted the event
+ * @param {string} calendarID - the id of the calendar the event belonged to
+ */
 function userDeletedEvent(app, initiatingUser, calendarID) {
     for (let client of app.locals.clients) {
         if (client.user.id !== initiatingUser) {

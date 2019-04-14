@@ -68,20 +68,14 @@ window.ws = window.ws || {};
                     getEditCalendars(() => {});
                     getViewCalendars(() => {});
                     break;
-                case 'DeletedCalendar':
-                    getEditCalendars(() => {});
-                    getViewCalendars(() => {});
-                    break;
-                case 'AddedPermission':
-                    getEditCalendars(() => {});
-                    getViewCalendars(() => {});
-                    break;
+                case 'DeletedCalendar': // falls through
+                case 'AddedPermission': // falls through
                 case 'RevokedPermission':
                     getEditCalendars(() => {});
                     getViewCalendars(() => {});
                     break;
-                case 'AddedEvent':
-                case 'EditedEvent':
+                case 'AddedEvent': // falls through
+                case 'EditedEvent': // falls through
                 case 'DeletedEvent':
                     getEvents(incoming.calendar, (events) => {});
                     break;
