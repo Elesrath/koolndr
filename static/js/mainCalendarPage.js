@@ -4,9 +4,33 @@ let selectedCalendarID;
 let selectedCalendarType;
 let selectedCalendarName;
 let selectedShareRecipientUserID;
-
 let selectedEvent;
 let eventlist = [];
+
+// function addUserEditPermissions(id, cb){
+//     $.post( "/shareCalendarAddEditUser", {userID: id, calendarID: selectedCalendarID}, function(result) {
+//         cb(result);
+//     });
+// }
+
+function changeUserType(userType,cb){
+    $.post( "/changeUserType", {userType: userType}, function(result) {
+        cb(result);
+    });
+}
+
+function handleChangeUserTypeClick(){
+    changeUserType(userType, function (result){
+        if(result === "success"){
+            $('#myAccountModal').modal('hide');
+            window.location.reload();
+        }
+        else{
+            alert("Changing user type failed: " + result );
+        }
+    });
+}
+
 
 function addCalendar(calendarName, cb){
     $.post( "/addCalendar", {name: calendarName}, function(result) {
@@ -251,6 +275,7 @@ function handleAddUserEditPermissionsClick(){
         }
     });
 }
+
 
 
 function handleAddUserViewPermissionsClick(){
