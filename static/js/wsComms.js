@@ -60,8 +60,13 @@ window.ws = window.ws || {};
                         type: 'Hello'
                     });
                     break;
+                case 'RefreshCalendar':
+                    getOwnCalendars(() => {});
+                    getEditCalendars(() => {});
+                    getViewCalendars(() => {});
+                    break;
                 default:
-                    log.warn(`Unknown message type ${self.connectionID}`, message.data);
+                    self.log.warn(`Unknown message type ${self.connectionID}`, message.data);
                     break;
             }
         };

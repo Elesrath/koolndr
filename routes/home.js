@@ -6,6 +6,7 @@ const calendar = require(`${__rootname}/models/calendar.js`);
 const event = require(`${__rootname}/models/events.js`);
 const user = require(`${__rootname}/models/user.js`);
 const log = require(`${__rootname}/utils/log.js`);
+const ws = require(`${__rootname}/utils/ws.js`);
 
  /**
   * Handle a GET to the login page
@@ -128,6 +129,7 @@ function handleAddCalendar(req, res, next){
         }
         else
         {
+            ws.userAddedCalendar(app, res.locals.user.id);
             res.send("success");
         }
     });
@@ -144,6 +146,7 @@ function handleEditCalendar(req, res, next){
         }
         else
         {
+            ws.userEditedCalendar(app, res.locals.user.id, req.body.id);
             res.send("success");
         }
     });
@@ -160,6 +163,7 @@ function handleDeleteCalendar(req, res, next){
         }
         else
         {
+            ws.userDeletedCalendar(app, req.body.id);
             res.send("success");
         }
     });
@@ -220,6 +224,7 @@ function handleAddEditCalendarUser(req, res, next){
         }
         else
         {
+            ws.allowCalendarEdit(app, req.body.calendarID, req.body.userID);
             res.send("success");
         }
     });
@@ -235,6 +240,7 @@ function handleAddViewCalendarUser(req, res, next){
         }
         else
         {
+            ws.allowCalendarView(app, req.body.calendarID, req.body.userID);
             res.send("success");
         }
     });
@@ -250,6 +256,7 @@ function handleRemoveCalendarUserSharePermissions(req, res, next){
         }
         else
         {
+            ws.revokePerms(app, req.body.calendarId, req.body.userID);
             res.send("success");
         }
     });
@@ -266,6 +273,7 @@ function handleAddEvent(req, res, next){
         }
         else
         {
+            ws.userAddedEvent(app, req.body.calendarID);
             res.send("success");
         }
     });
@@ -297,6 +305,7 @@ function handleEditEvent(req, res, next){
         }
         else
         {
+            ws.userEditedEvent(app, req.body.calendarID);
             res.send("success");
         }
     });
@@ -313,6 +322,7 @@ function handleRemoveEvent(req, res, next){
         }
         else
         {
+            ws.userDeletedEvent(app, req.body.calendarID);
             res.send("success");
         }
     });

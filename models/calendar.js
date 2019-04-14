@@ -453,7 +453,7 @@ function removeCalendar(db, calendarID, ownerID, cb)
     db.query(
         `SELECT 1
         FROM users
-        INNER JOIN calendars 
+        INNER JOIN calendars
         ON calendars.ownerID = users.uuid
         WHERE users.uuid = ? AND users.userType = 1 AND calendars.calendarID = ?`,
         [ownerID, calendarID], (err, row) =>
@@ -498,7 +498,7 @@ function getViewers(db, calendarID, cb)
     db.query(
         `SELECT users.uuid, users.username
         FROM users
-        INNER JOIN canViewEdit 
+        INNER JOIN canViewEdit
         ON users.uuid = canViewEdit.userID
         WHERE canViewEdit.calendarID = ? AND canViewEdit.canEdit = FALSE`,
         [calendarID], (err, result) =>
@@ -525,7 +525,7 @@ function getEditors(db, calendarID, cb)
     db.query(
         `SELECT users.uuid, users.username
         FROM users
-        INNER JOIN canViewEdit 
+        INNER JOIN canViewEdit
         ON users.uuid = canViewEdit.userID
         WHERE canViewEdit.calendarID = ? AND canViewEdit.canEdit = TRUE`,
         [calendarID], (err, result) =>
@@ -542,6 +542,36 @@ function getEditors(db, calendarID, cb)
 }
 
 /**
+ * Returns a list of all userID's that have viewing or editing privileges on calendarID
+ * @param db initialized database conenction
+ * @param calendarID calendar to search
+ * @param cb callback
+ */
+function getViewersAndEditors(db, calendarID, cb) {
+    db.query(
+        `SELECT canViewEdit.userID
+        FROM canViewEdit
+        WHERE canViewEdit.calendarID = ?
+
+        UNION
+
+        SELECT calendars.ownerID
+        FROM calendars
+        WHERE calendars.calendarID = ?`,
+        [calendarID, calendarID], (err, result) => {
+        if (err) {
+            cb(err.sqlMessage, null);
+        } else {
+            let users = [];
+            for (let row of result) {
+                users.push(row.userID);
+            }
+            cb(null, users);
+        }
+    });
+}
+
+/**
  * @namespace models.calendar
  */
 module.exports = {
@@ -555,6 +585,6 @@ module.exports = {
     updateCalendar: updateCalendar,
     removeCalendar: removeCalendar,
     getViewers: getViewers,
-    getEditors: getEditors
-
+    getEditors: getEditors,
+    getViewersAndEditors: getViewersAndEditors
 };

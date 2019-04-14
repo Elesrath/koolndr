@@ -4,6 +4,7 @@
 
 const uuid = require('uuid/v4');
 
+const calendar = require(`${__rootname}/models/calendar.js`);
 const log = require(`${__rootname}/utils/log.js`);
 
 
@@ -101,9 +102,74 @@ function handleWs(ws, res) {
     app.locals.clients.push(new Connection(app, ws, res.res));
 }
 
+function userAddedCalendar(app, userID) {
+    for (let client of app.locals.clients) {
+        if (client.user.id === userID) {
+            client.send({
+                type: 'SelfAddCalendar'
+            });
+        }
+    }
+}
+
+function userEditedCalendar(app, initiatingUser, calendarID) {
+    calendar.getViewersAndEditors(app.locals.db, calendarID, (err, users) => {
+        if (err) {
+            log.warn(err);
+            return;
+        }
+
+        for (let client of app.locals.clients) {
+            if (client.user.id !== initiatingUser && users.indexOf(client.user.id) !== -1) {
+                client.send({
+                    type: 'RefreshCalendar',
+                    calendarID: calendarID
+                });
+            }
+        }
+    });
+}
+
+function userDeletedCalendar(app, calendarID) {
+
+}
+
+function allowCalendarEdit(app, calendarID, userID) {
+
+}
+
+function allowCalendarView(app, calendarID, userID) {
+
+}
+
+function revokePerms(app, calendarID, userID) {
+
+}
+
+function userAddedEvent(app, calendarID) {
+
+}
+
+function userEditedEvent(app, calendarID) {
+
+}
+
+function userDeletedEvent(app, calendarID) {
+
+}
+
+
 /**
  * @namespace utils.ws
  */
 module.exports = {
-    handleWs: handleWs
+    handleWs: handleWs,
+    userAddedCalendar: userAddedCalendar,
+    userEditedCalendar: userEditedCalendar,
+    userDeletedCalendar: userDeletedCalendar,
+    allowCalendarEdit: allowCalendarEdit,
+    revokePerms: revokePerms,
+    userAddedEvent: userAddedEvent,
+    userEditedEvent: userEditedEvent,
+    userDeletedEvent: userDeletedEvent
 };
