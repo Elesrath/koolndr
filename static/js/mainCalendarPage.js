@@ -134,7 +134,7 @@ function handleCalendarNavClick(id) {
     selectedCalendarName = $('#' + id + ' > span').text();
     selectedCalendarType = selectedCalendar.attr("data-ctype");
 
-    getEvents(id, function(results){});
+    getEvents(selectedCalendarID, function(results){});
 
     if(selectedCalendarType === "own"){
         calendar.setOption('header', {
@@ -523,9 +523,9 @@ $(document).ready(function() {
             '-' + pad(newEndDate.getUTCMonth() + 1) +
             '-' + pad(newEndDate.getUTCDate());
 
-            editEvent(selectedCalendar.id, eventID, newStart, newEnd, eventName, eventDescription, function (result) {
+            editEvent(selectedCalendarID, eventID, newStart, newEnd, eventName, eventDescription, function (result) {
                 if (result === "success") {
-                    getEvents(selectedCalendar.id, function(results){
+                    getEvents(selectedCalendarID, function(results){
                     });
                 }
                 else {
