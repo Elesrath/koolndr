@@ -25,6 +25,31 @@ function handleHomePage(req, res, next) {
     });
 }
 
+function handleChangeUserType(req, res, next){
+    let app = this;
+    let changedType = 0;
+    if (1==req.body.userType){
+        log.debug("was premium so new type is 0")
+    }
+    else{
+        changedType=1;
+        log.debug("was not premium so type is now 1")
+    }
+    user.changeUserType(app.locals.db, res.locals.user.id, changedType, (result) =>
+    {
+        if(result !== null)
+        {
+            log.debug(result);
+            res.send(result);
+        }
+        else
+        {
+            log.debug("succesfully changed type to: "+changedType.toString())
+            res.send("success");
+        }
+    });
+}
+
 function handleGetOwnCalendars(req, res, next){
     let app = this;
     calendar.getOwnedCalendars(app.locals.db, res.locals.user.id, (err, calendars) =>
@@ -300,6 +325,8 @@ function load(app) {
     app.post('/addEvent', handleAddEvent.bind(app));
     app.post('/editEvent', handleEditEvent.bind(app));
     app.post('/removeEvent', handleRemoveEvent.bind(app));
+
+    app.post('/changeUserType', handleChangeUserType.bind(app));
 }
 
 /**
@@ -328,4 +355,6 @@ module.exports = {
     handleGetEvents: handleGetEvents,
     handleEditEvent: handleEditEvent,
     handleRemoveEvent: handleRemoveEvent,
+
+    handleChangeUserType: handleChangeUserType,
 };

@@ -47,7 +47,7 @@
                     <i class="fas fa-user-circle fa-fw"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                    <a class="dropdown-item" href="#">My Account</a>
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#myAccountModal">My Account</a>
                     <a class="dropdown-item" href="#">My Calendars</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
@@ -99,6 +99,57 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
+
+            <!-- My Profile Modal-->
+            <div class="modal fade" id="myAccountModal" tabindex="-1" role="dialog" aria-labelledby="myAccountModal" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">My Account</h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <p>Username: <%= res.locals.user.username %></p>
+                                <p>Email: <%= res.locals.user.email %></p>
+                                <p>Account Type: 
+                                        <% if(res.locals.user.userType){ %>
+                                            Premium User
+                                          <% } else{ %> 
+                                            Non-premium User
+                                         <% } %>
+                                </p>
+                                <div class="form-label-group">
+                                    <input id="passwordInput1" class="form-control" maxlength="30" required="required" autofocus="autofocus">
+                                    <label for="passwordInput1">Your password</label>
+                                </div>
+                                <div class="form-label-group">
+                                    <input id="passwordInput2" class="form-control" maxlength="30" required="required" autofocus="autofocus">
+                                    <label for="passwordInput2">Verify password</label>
+                                </div>
+                                <div class="form-label-group">
+                                    <input id="newPasswordInput" class="form-control" maxlength="30" required="required" autofocus="autofocus">
+                                    <label for="newPasswordInput">New password</label>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                            <button id="addEventButton" class="btn btn-primary" type="submit" onclick="handleChangeUserTypeClick();return false;">
+                                    <% if(res.locals.user.userType){ %>
+                                        Downgrade Account
+                                      <% } else{ %> 
+                                        Upgrade Account
+                                     <% } %>
+                            </button>
+        
+                            <button id="addEventButton" class="btn btn-primary" type="submit" onclick="handleUpdateUser();return false;">Update Account</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
     <!-- Logout Modal-->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModal" aria-hidden="true">
