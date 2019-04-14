@@ -29,6 +29,21 @@ function handleLoginPage(req, res, next) {
 }
 
 /**
+ * Handle a logout action
+ * @function handleLogout
+ * @memberof routes.login
+ * @param {IncomingMessage} req - the request
+ * @param {OutgoingMessage} res - the response
+ * @param {function} next - the next routing handler
+ */
+function handleLogout(req, res, next) {
+    let app = this;
+    authentication.deleteSession(app.locals.db, res.locals.user.id, () => {
+        res.redirect('/');
+    });
+}
+
+/**
  * Handle a POST to the login page
  * @function handleLoginAttempt
  * @memberof routes.login
@@ -105,6 +120,7 @@ function handleLoginAttempt(req, res, next) {
 function load(app) {
     app.get('/login', handleLoginPage.bind(app));
     app.post('/login', handleLoginAttempt.bind(app));
+    app.get('/logout', handleLogout.bind(app));
 }
 
 /**

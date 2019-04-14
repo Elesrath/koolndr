@@ -115,10 +115,10 @@
                     <form>
                         <p>Username: <%= res.locals.user.username %></p>
                         <p>Email: <%= res.locals.user.email %></p>
-                        <p>Account Type: 
+                        <p>Account Type:
                                 <% if(res.locals.user.userType){ %>
                                     Premium User
-                                    <% } else{ %> 
+                                    <% } else{ %>
                                     Non-premium User
                                     <% } %>
                         </p>
@@ -141,7 +141,7 @@
                     <button id="changeUserTypeButton" class="btn btn-primary" type="submit" onclick="handleChangeUserTypeClick();return false;">
                             <% if(res.locals.user.userType){ %>
                                 Downgrade Account
-                                <% } else{ %> 
+                                <% } else{ %>
                                 Upgrade Account
                                 <% } %>
                     </button>
@@ -165,7 +165,7 @@
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+                    <a class="btn btn-primary" href="/logout">Logout</a>
                 </div>
             </div>
         </div>
