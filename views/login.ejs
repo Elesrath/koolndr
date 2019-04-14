@@ -8,12 +8,10 @@
 
         <link href="/startbootstrap-sb-admin-gh-pages/css/sb-admin.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="/css/login.css">
-
-        <script type="text/javascript" src="/js/login.js"></script>
         <link href="/startbootstrap-sb-admin-gh-pages/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-        
+
     </head>
-    
+
     <body>
         <% if (typeof error !== 'undefined') { %>
             <div>
@@ -26,57 +24,58 @@
         <div class="imgcontainer">
                 <img src="/images/logo.png" alt="Logo" class="logo">
                 </div>
-            
+
                 <div class="container">
                 <label for="username"><b>Username</b></label>
                 <input type="text" placeholder="Enter Username" name="username" required>
                 <br>
-                
+
                 <label for="password"><b>Password</b></label>
                 <input type="password" placeholder="Enter Password" name="password" required>
-                    
+
                 <button type="submit">Login</button>
                 </div>
-            
+
                 <div class="container">
                 <button type="button" class="btn btn-secondary" type="submit" data-toggle="modal" data-target="#registerModal">Register</button>
                 </div>
     </form>
-        
+
     <!-- Register Modal-->
     <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModal" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Create Event</h5>
+                        <h5>Create Account</h5>
                         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-                        <form>
+                    <form method="POST" action="/newaccount">
+                        <div class="modal-body">
                             <div class="form-label-group">
-                                <input id="usernameInput" class="form-control" maxlength="30" required="required" autofocus="autofocus">
+                                <input id="usernameInput" class="form-control" maxlength="30" required="required" autofocus="autofocus" name="username">
                                 <label for="usernameInput">Username</label>
                             </div>
                             <div class="form-label-group">
-                                <input id="passwordInput" class="form-control" maxlength="30" required="required">
+                                <input id="passwordInput" class="form-control" maxlength="30" required="required" type="password" name="password">
                                 <label for="passwordInput">Password</label>
                             </div>
                             <div class="form-label-group">
-                                <input id="repasswordInput" class="form-control" maxlength="30" required="required">
+                                <input id="repasswordInput" class="form-control" maxlength="30" required="required" type="password">
                                 <label for="repasswordInput">Confirm password</label>
                             </div>
                             <div class="form-label-group">
-                                    <input id="emailInput" class="form-control" maxlength="30" required="required">
-                                    <label for="emailInput">Email</label>
+                                <input id="emailInput" class="form-control" maxlength="30" required="required" type="email" name="email">
+                                <label for="emailInput">Email</label>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                        <button id="registerModalButton" class="btn btn-primary" type="submit" onclick="handleTODO();return false;">Register</button>
-                    </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                            <button id="registerModalButton" class="btn btn-primary" type="submit">Register</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -90,6 +89,7 @@
 
     <!-- Custom scripts for all pages-->
     <script src="/startbootstrap-sb-admin-gh-pages/js/sb-admin.min.js"></script>
+    <script type="text/javascript" src="/js/login.js"></script>
 
     </body>
 </html>

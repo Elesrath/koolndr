@@ -25,7 +25,6 @@ function handleLoginPage(req, res, next) {
         res: res,
         app: app
     });
-    next();
 }
 
 /**
@@ -111,6 +110,87 @@ function handleLoginAttempt(req, res, next) {
     });
 }
 
+
+/**
+ * Handle a POST to the newaccount page
+ * @function handleNewAccount
+ * @memberof routes.login
+ * @param {IncomingMessage} req - the request
+ * @param {OutgoingMessage} res - the response
+ * @param {function} next - the next routing handler
+ */
+function handleNewAccount(req, res, next) {
+    let app = this;
+    app.locals.db.query('SELECT LOWER(username) FROM USERS', (err, rows) => {
+        if (err) {
+            log.error(err);
+            res.render('login', {
+                req: req,
+                res: res,
+                app: app,
+                error: 'An error occurred.'
+            });
+            return;
+        }
+
+        if (req.body.username && req.body.password && req.body.email) {
+            let username = req.body.username.toLowerCase().trim();
+            let password = req.body.password.trim();
+            let email = req.body.email.toLowerCase().trim();
+
+            if (!username || !password || !email) {
+                res.render('login', {
+                    req: req,
+                    res: res,
+                    app: app,
+                    error: 'A username, password, and email are required'
+                });
+                return;
+            }
+
+            if (/ /.test(username)) {
+                res.render('login', {
+                    req: req,
+                    res: res,
+                    app: app,
+                    error: 'The username may not contain a space'
+                });
+                return;
+            }
+
+            for (let row of rows) {
+                if (row['LOWER(username)'] === username) {
+                    res.render('login', {
+                        req: req,
+                        res: res,
+                        app: app,
+                        error: 'This username has already been taken'
+                    });
+                    return;
+                }
+            }
+
+            authentication.createUser(app.locals.db, username, password, email, (err) => {
+                res.render('login', {
+                    req: req,
+                    res: res,
+                    app: app,
+                    error: 'Account created.'
+                });
+                return;
+            });
+        } else {
+            res.render('login', {
+                req: req,
+                res: res,
+                app: app,
+                error: 'A username, password, and email are required'
+            });
+            return;
+        }
+    });
+}
+
 /**
  * Load the routes in this file
  * @function load
@@ -121,6 +201,8 @@ function load(app) {
     app.get('/login', handleLoginPage.bind(app));
     app.post('/login', handleLoginAttempt.bind(app));
     app.get('/logout', handleLogout.bind(app));
+    app.post('/newaccount', handleNewAccount.bind(app));
+    app.get('/newaccount', handleLoginPage.bind(app));
 }
 
 /**
@@ -129,5 +211,6 @@ function load(app) {
 module.exports = {
     load: load,
     handleLoginPage: handleLoginPage,
-    handleLoginAttempt: handleLoginAttempt
+    handleLoginAttempt: handleLoginAttempt,
+    handleNewAccount: handleNewAccount
 };
