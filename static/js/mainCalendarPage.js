@@ -157,6 +157,7 @@ function handleCalendarNavClick(id) {
             right: 'today, prev,next',
         });
     }
+    calendar.setOption('selectable', true);
 }
 
 function handleAddNewCalendarClick() {
@@ -417,6 +418,11 @@ function pad(number) {
 
 $(document).ready(function() {
     userType = $("input[name='user-userType']").val();
+    $('#eventStartDate').datepicker({dateFormat: "yy-mm-dd"});
+    $('#eventEndDate').datepicker({dateFormat: "yy-mm-dd"});
+    $('#eventNewStart').datepicker({dateFormat: "yy-mm-dd"});
+    $('#eventNewEnd').datepicker({dateFormat: "yy-mm-dd"});
+
     if(userType){
         getOwnCalendars(function(){});
     }
@@ -461,8 +467,10 @@ $(document).ready(function() {
         },
         editable: true,
         eventLimit: 4,
-        selectable: true,
+        selectable: false,
+        allDayDefault: true,
         select: function(selectionInfo) {
+            /*
             let starting = selectionInfo.start;
             let ending = selectionInfo.end;
             ending.setDate(ending.getDate() - 1);
@@ -474,13 +482,14 @@ $(document).ready(function() {
             let ending_str = ending.getUTCFullYear() +
             '-' + pad(ending.getUTCMonth() + 1) +
             '-' + pad(ending.getUTCDate());
-
+            */
             $("#addEventModal").modal('show');
-            $("#eventStartDate").val(starting_str);
-            $("#eventEndDate").val(ending_str);
+            $("#eventStartDate").val(selectionInfo.startStr);
+            $("#eventEndDate").val(selectionInfo.startStr);
         },
         eventClick: function(info) {
             selectedEvent = info.event;
+
             info.jsEvent.preventDefault();                      // don't let the browser navigate by default
 
             let starting = selectedEvent.start;
@@ -510,7 +519,7 @@ $(document).ready(function() {
             let eventName = selectedEvent.title;
             let eventID = selectedEvent.id;
 
-            eventDescription = selectedEvent.extendedProps.description;
+            let eventDescription = selectedEvent.extendedProps.description;
 
             let newStartDate = new Date(selectedEvent.start);
             let newEndDate = new Date(selectedEvent.end);
@@ -533,10 +542,10 @@ $(document).ready(function() {
                 }
             });
         },
-        eventRender: function(info) {
+        eventRender: function(info, el) {
             let desc = info.event.extendedProps.description;
             info.el.insertAdjacentHTML('beforeend', desc);
-        }
+        },
     });
 
     calendar.render();
