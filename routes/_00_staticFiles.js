@@ -18,6 +18,11 @@ module.exports = {
         // serve all static stuff with the built in logic
         app.use(express.static(conf.staticPath));
 
+        // favicon
+        app.get('*favicon*', (req, res, next) => {
+            res.sendFile(`${__rootname}/static/images/favicon.png`);
+        });
+
         // check for .css requests on a .sass file
         app.get('*.css', (req, res, next) => {
             let sassFile = req._parsedUrl.pathname.replace(/\.css$/, '.sass');
