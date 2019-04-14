@@ -132,8 +132,8 @@
                 <div class="modal-body">
                     <form>
                         <div class="form-label-group">
-                            <input id="calendarNameInput" class="form-control" maxlength="50" required="required" autofocus="autofocus">
-                            <label for="calendarNameInput">Calendar Name</label>
+                            <input id="addNewCalendarNameInput" class="form-control" maxlength="50" required="required" autofocus="autofocus">
+                            <label for="addNewCalendarNameInput">Calendar Name</label>
                         </div>
                     </form>
                 </div>
@@ -206,18 +206,18 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="input-group">
-                                <input id="shareCalendarSearchInput" type="text" class="form-control" placeholder="Search Users" aria-label="User Search" aria-describedby="button-addon2">
+                                <input id="shareCalendarSearchInput" type="text" maxlength="50" class="form-control" placeholder="Search Users" aria-label="User Search" aria-describedby="button-addon2">
                                 <div class="input-group-append">
                                     <button id="searchCalendarButton" class="btn btn-primary" type="button" onclick="handleSearchUsersClick()"><i class="fa fa-search"></i></button>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-body list-group-flush p-0 m-0" style="height: 200px; overflow-y: auto;" id="searchResults">
+                        <div class="card-body list-group-flush p-0 m-0" style="height: 150px; overflow-y: auto;" id="searchResults">
 
                         </div>
                         <div class="card-footer d-flex justify-content-end p-1 m-0">
-                            <button id="editSharePermissionButton" class="btn btn-primary m-1"><i class="fa fa-edit"></i> Give User Edit Permissions</button>
-                            <button id="viewSharePermissionButton" class="btn btn-primary m-1"><i class="fa fa-eye"></i> Give User View Permissions</button>
+                            <button id="editSharePermissionButton" class="btn btn-primary m-1" disabled onclick="handleAddUserEditPermissionsClick()"><i class="fa fa-edit" ></i> Give User Edit Permissions</button>
+                            <button id="viewSharePermissionButton" class="btn btn-primary m-1" disabled onclick="handleAddUserViewPermissionsClick()"><i class="fa fa-eye"></i> Give User View Permissions</button>
                         </div>
                     </div>
                 </div>
@@ -225,36 +225,14 @@
                     <div class="w-100">
                         <div class="d-flex">
                             <span class="input-group-text" title="Users with Edit Permissions"><i class="fa fa-edit"></i></span>
-                            <div class="d-flex flex-row flex-wrap align-items-center border rounded p-1 flex-grow-1">
-                                <div class="alert alert-secondary alert-dismissible fade show m-1" role="alert">
-                                    Isabel
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="alert alert-secondary alert-dismissible fade show m-1" role="alert">
-                                    Isabel
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
+                            <div id="editPermissionUsers" class="d-flex flex-row flex-wrap align-items-center border rounded p-1 flex-grow-1" style="height: 70px">
+
                             </div>
                         </div>
                         <div class="d-flex">
                             <span class="input-group-text" title="Users with View Permissions"><i class="fa fa-eye"></i></span>
-                            <div class="d-flex flex-row flex-wrap align-items-center border rounded p-1 flex-grow-1">
-                                <div class="alert alert-secondary alert-dismissible fade show m-1" role="alert">
-                                    Isabel
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="alert alert-secondary alert-dismissible fade show m-1" role="alert">
-                                    Isabel
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
+                            <div id="viewPermissionUsers" class="d-flex flex-row flex-wrap align-items-center border rounded p-1 flex-grow-1" style="height: 70px">
+
                             </div>
                         </div>
                     </div>

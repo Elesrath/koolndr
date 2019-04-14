@@ -1,10 +1,9 @@
-let calendar;
-let selectedCalendar;
-let selectedCalendarName = "";
-let calendarsOwn=[];
-let calendarsEdit=[];
-let calendarsView=[];
 let userType = 0;
+let calendar;
+let selectedCalendarID;
+let selectedCalendarType;
+let selectedCalendarName;
+let selectedShareRecipientUserID;
 
 let selectedEvent;
 let eventlist = [];
@@ -31,12 +30,9 @@ function getOwnCalendars(cb){
     $.get("/getOwnCalendars", function (calendars) {
         let own = $("#calendarsOwn");
         own.empty();
-        calendarsOwn.length = 0;
-        let c;
         for(let i = 0; i < calendars.length; i++){
-            calendarsOwn.push(calendars[i].name);
-            c = JSON.stringify({index: i, id: calendars[i].calendarID, type: "own"});
-            own.append('<a class="nav-link custom-link" href="#" id=' + c +
+            own.append('<a class="nav-link custom-link" href="#" id=' + calendars[i].name +'_'+ calendars[i].calendarID +
+                ' data-ctype="own" data-cid='+ calendars[i].calendarID + ' data-cname='+ calendars[i].name +
                 ' onclick="handleCalendarNavClick(this.id);return false;">' +
                 '<i class="fas fa-fw fa-calendar-alt"></i><span> ' + calendars[i].name + '</span></a>');
         }
@@ -48,12 +44,9 @@ function getEditCalendars(){
     $.get("/getEditCalendars", function (calendars) {
         let edit = $("#calendarsEdit");
         edit.empty();
-        calendarsEdit.length = 0;
-        let c;
         for(let i = 0; i < calendars.length; i++){
-            calendarsEdit.push(calendars[i].name);
-            c = JSON.stringify({index: i, id: calendars[i].calendarID, type: "edit"});
-            edit.append('<a class="nav-link custom-link" href="#" id=' + c +
+            edit.append('<a class="nav-link custom-link" href="#" id=' + calendars[i].name +'_'+ calendars[i].calendarID +
+                ' data-ctype="edit" data-cid='+ calendars[i].calendarID + ' data-cname='+ calendars[i].name +
                 ' onclick="handleCalendarNavClick(this.id);return false;">' +
                 '<i class="fas fa-fw fa-calendar-alt"></i><span> ' + calendars[i].name + '</span></a>');
         }
@@ -64,14 +57,45 @@ function getViewCalendars(){
     $.get("/getViewCalendars", function (calendars) {
         let view = $("#calendarsView");
         view.empty();
-        calendarsView.length = 0;
-        let c;
-        for(let i = 0; i < calendars.length; i++) {
-            calendarsView.push(calendars[i].name);
-            c = JSON.stringify({index: i, id: calendars[i].calendarID, type: "view"});
-            view.append('<a class="nav-link custom-link" href="#" id=' + c +
+        for(let i = 0; i < calendars.length; i++){
+            view.append('<a class="nav-link custom-link" href="#" id=' + calendars[i].name +'_'+ calendars[i].calendarID +
+                ' data-ctype="view" data-cid='+ calendars[i].calendarID + ' data-cname='+ calendars[i].name +
                 ' onclick="handleCalendarNavClick(this.id);return false;">' +
                 '<i class="fas fa-fw fa-calendar-alt"></i><span> ' + calendars[i].name + '</span></a>');
+        }
+    });
+}
+
+function getEditPermissionUsers(){
+    let editUsersContainer = $("#editPermissionUsers");
+    editUsersContainer.empty();
+    $.post( "/getCalendarEditUsers", {id: selectedCalendarID}, function(users) {
+        for(let i = 0; i < users.length; i++) {
+            editUsersContainer.append(
+                '<div class="alert alert-secondary alert-dismissible fade show m-1" role="alert">' +
+                    users[i].username +
+                    '<button type="button" class="close" aria-label="Close"' +
+                        ' onclick="handleRemoveSharedWithUserClick(this.id);" id='+ users[i].uuid +'>' +
+                        '<span aria-hidden="true">&times;</span>' +
+                    '</button>' +
+                '</div>');
+        }
+    });
+}
+
+function getViewPermissionUsers(){
+    let viewUsersContainer = $("#viewPermissionUsers");
+    viewUsersContainer.empty();
+    $.post( "/getCalendarViewUsers", {id: selectedCalendarID}, function(users) {
+        for(let i = 0; i < users.length; i++) {
+            viewUsersContainer.append(
+                '<div class="alert alert-secondary alert-dismissible fade show m-1" role="alert">' +
+                users[i].username +
+                '<button type="button" class="close" aria-label="Close"' +
+                ' onclick="handleRemoveSharedWithUserClick(this.id);" id='+ users[i].uuid +'>' +
+                '<span aria-hidden="true">&times;</span>' +
+                '</button>' +
+                '</div>');
         }
     });
 }
@@ -82,24 +106,43 @@ function getUserSearchResults(searchTerm, cb){
     });
 }
 
-function handleCalendarNavClick(id) {
-    $(".sidebar-selected").removeClass("sidebar-selected");
-    let c = document.getElementById(id);
-    c.classList.add("sidebar-selected");
-
-    selectedCalendar = JSON.parse(id);
-    getEvents(selectedCalendar.id, function(results){
+function addUserEditPermissions(id, cb){
+    $.post( "/shareCalendarAddEditUser", {userID: id, calendarID: selectedCalendarID}, function(result) {
+        cb(result);
     });
-    if(selectedCalendar.type === "own"){
-        selectedCalendarName = calendarsOwn[selectedCalendar.index];
+}
+
+function addUserViewPermissions(id, cb){
+    $.post( "/shareCalendarAddViewUser", {userID: id, calendarID: selectedCalendarID}, function(result) {
+        cb(result);
+    });
+}
+
+function removeUserPermissions(id, cb){
+    $.post( "/removeUserAccessPermissions", {userID: id, calendarID: selectedCalendarID}, function(result) {
+        cb(result);
+    });
+}
+
+function handleCalendarNavClick(id) {
+
+    $(".sidebar-selected").removeClass("sidebar-selected");
+    document.getElementById(id).classList.add("sidebar-selected");
+    let selectedCalendar = $('#'+id);
+    selectedCalendarID = selectedCalendar.attr("data-cid");
+    selectedCalendarName = selectedCalendar.attr("data-cname");
+    selectedCalendarType = selectedCalendar.attr("data-ctype");
+
+    getEvents(id, function(results){});
+
+    if(selectedCalendarType === "own"){
         calendar.setOption('header', {
             left: 'editButton, shareButton, deleteButton',
             center: 'title',
             right: 'today, prev,next',
         });
     }
-    else if (selectedCalendar.type === "edit") {
-        selectedCalendarName = calendarsEdit[selectedCalendar.index];
+    else if (selectedCalendarType === "edit") {
         calendar.setOption('header', {
             left: 'shareButton',
             center: 'title',
@@ -107,7 +150,6 @@ function handleCalendarNavClick(id) {
         });
     }
     else{
-        selectedCalendarName = calendarsView[selectedCalendar.index];
         calendar.setOption('header', {
             left: '',
             center: 'title',
@@ -117,7 +159,7 @@ function handleCalendarNavClick(id) {
 }
 
 function handleAddNewCalendarClick() {
-    let calendarName = $.trim($('#calendarNameInput').val());
+    let calendarName = $.trim($('#addNewCalendarNameInput').val());
     if (calendarName === '') {
         alert('Input can not be left blank');
         return false;
@@ -125,9 +167,9 @@ function handleAddNewCalendarClick() {
     addCalendar(calendarName, function (result){
         if(result === "success"){
             getOwnCalendars();
-            $('#calendarNameInput').val('');
+            $('#addNewCalendarNameInput').val('');
             $('#addNewCalendarModal').modal('hide');
-        }   
+        }
         else{
             alert("Add new calendar failed: " + result );
         }
@@ -140,10 +182,10 @@ function handleEditCalendarClick() {
         alert('Input can not be left blank');
         return false;
     }
-    editCalendar(selectedCalendar.id, calendarName, function (result){
+    editCalendar(selectedCalendarID, calendarName, function (result){
         if(result === "success"){
             getOwnCalendars(function(){
-                handleCalendarNavClick(JSON.stringify(selectedCalendar));
+                handleCalendarNavClick(selectedCalendarID);
             });
             $('#editCalendarNameInput').val('');
             $('#editCalendarModal').modal('hide');
@@ -155,7 +197,7 @@ function handleEditCalendarClick() {
 }
 
 function handleDeleteCalendarClick() {
-    deleteCalendar(selectedCalendar.id, function (result){
+    deleteCalendar(selectedCalendarID, function (result){
         if(result === "success"){
             $('#deleteCalendarModal').modal('hide');
             window.location.reload();
@@ -167,6 +209,8 @@ function handleDeleteCalendarClick() {
 }
 
 function handleSearchUsersClick(){
+    $("#editSharePermissionButton").attr("disabled", true);
+    $("#viewSharePermissionButton").attr("disabled", true);
     let searchTerm = $.trim($("#shareCalendarSearchInput").val());
     if (searchTerm === '') {
         alert('Input can not be left blank');
@@ -180,14 +224,55 @@ function handleSearchUsersClick(){
             }
             else {
                 for (let i = 0; i < results.length; i++) {
-                    searchResults.append('<button type="button" id=' + results[i].uuid +
-                        ' class="list-group-item list-group-item-action">' + results[i].username + '</button>');
+                    searchResults.append('<button type="button" class="list-group-item list-group-item-action" '+
+                        'onclick="handleSearchUserResultClick(this.id);" id=' + results[i].uuid +'>' +
+                        results[i].username + '</button>');
                 }
             }
         })
     }
 }
 
+function handleSearchUserResultClick(id){
+    $("#editSharePermissionButton").attr("disabled", false);
+    $("#viewSharePermissionButton").attr("disabled", false);
+    selectedShareRecipientUserID = id;
+}
+
+function handleAddUserEditPermissionsClick(){
+    addUserEditPermissions(selectedShareRecipientUserID, function (result){
+        if(result === "success"){
+            getEditPermissionUsers();
+        }
+        else{
+            alert("Add edit permission failed: " + result );
+        }
+    });
+}
+
+
+function handleAddUserViewPermissionsClick(){
+    addUserViewPermissions(selectedShareRecipientUserID, function (result){
+        if(result === "success"){
+            getViewPermissionUsers();
+        }
+        else{
+            alert("Add view permission failed: " + result );
+        }
+    });
+}
+
+function handleRemoveSharedWithUserClick(id) {
+    removeUserPermissions(id, function (result){
+        if(result === "success"){
+            getEditPermissionUsers();
+            getViewPermissionUsers();
+        }
+        else{
+            alert("Remove access permissions failed: " + result );
+        }
+    });
+}
 
 function addEvent(calendarID, eventName, startDate, endDate, eventDescription, cb) {
     $.post("/addEvent", {calendarID : calendarID, eventName : eventName, startDate: startDate, endDate : endDate, eventDescription : eventDescription}, function(result) {
@@ -226,12 +311,12 @@ function getEvents(calendarID, cb) {
     '-' + pad(ending.getUTCDate());
 
     $.post("/getEvents", {calendarID : calendarID, rangeBegin : rangeBegin, rangeEnd : rangeEnd}, function(events) {
-        
+
         let old_events = calendar.getEvents();
         old_events.forEach(function(event) {
             event.remove();
         });
-        
+
         eventlist.length = 0;
         for (let i = 0; i < events.length; i++) {
             let inst = {};
@@ -262,9 +347,9 @@ function handleAddEventClick() {
     let eventEnd = $.trim($('#eventEndDate').val());
     let eventDescription = $.trim($('#eventDescription').val());
 
-    addEvent(selectedCalendar.id, eventName, eventStart, eventEnd, eventDescription, function (result) {
+    addEvent(selectedCalendarID, eventName, eventStart, eventEnd, eventDescription, function (result) {
         if (result === "success") {
-            getEvents(selectedCalendar.id, function(results){
+            getEvents(selectedCalendarID, function(results){
             });
             $('#eventNameInput').val('');
             $('#eventStartDate').val('');
@@ -290,9 +375,9 @@ function handleEditEventClick() {
 
     let eventID = selectedEvent.id;
 
-    editEvent(selectedCalendar.id, eventID, eventStart, eventEnd, eventName, eventDescription, function (result) {
+    editEvent(selectedCalendarID, eventID, eventStart, eventEnd, eventName, eventDescription, function (result) {
         if (result === "success") {
-            getEvents(selectedCalendar.id, function(results){
+            getEvents(selectedCalendarID, function(results){
             });
             $('#eventNewName').val('');
             $('#eventNewStart').val('');
@@ -310,9 +395,9 @@ function handleDeleteEventClick() {
 
     let eventID = selectedEvent.id;
 
-    removeEvent(selectedCalendar.id, eventID, function (result) {
+    removeEvent(selectedCalendarID, eventID, function (result) {
         if(result === "success"){
-            getEvents(selectedCalendar.id, function(results){
+            getEvents(selectedCalendarID, function(results){
             });
             $('#editEventModal').modal('hide');
         }
@@ -355,6 +440,8 @@ $(document).ready(function() {
                 text: 'Share',
                 click: function () {
                     $("#shareCalendarModalTitle").text("Share Calendar: " + selectedCalendarName);
+                    getEditPermissionUsers();
+                    getViewPermissionUsers();
                     $('#shareCalendarModal').modal('show');
                 }
             },
@@ -410,7 +497,7 @@ $(document).ready(function() {
             let ending_str = ending.getUTCFullYear() +
             '-' + pad(ending.getUTCMonth() + 1) +
             '-' + pad(ending.getUTCDate());
-            
+
             $("#editEventModalTitle").text("Edit Event: " + selectedEvent.title);
             $("#editEventModal").modal('show');
             $("#eventNewStart").val(starting_str);
@@ -453,8 +540,17 @@ $(document).ready(function() {
 
     calendar.render();
 
+    let addNewCalendarNameInput = document.getElementById("addNewCalendarNameInput");
     let editCalendarNameInput = document.getElementById("editCalendarNameInput");
     let shareCalendarSearchInput = document.getElementById("shareCalendarSearchInput");
+
+    addNewCalendarNameInput.addEventListener("keypress", function(event) {
+        // If enter is pressed
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            document.getElementById("addNewCalendarButton").click();
+        }
+    });
 
     editCalendarNameInput.addEventListener("keypress", function(event) {
         // If enter is pressed
@@ -475,5 +571,8 @@ $(document).ready(function() {
     $('#shareCalendarModal').on('hidden.bs.modal', function () {
         let searchResults = $('#searchResults');
         searchResults.empty();
-    })
+        $('#shareCalendarSearchInput').val('');
+        $("#editSharePermissionButton").attr("disabled", true);
+        $("#viewSharePermissionButton").attr("disabled", true);
+    });
 });

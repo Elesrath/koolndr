@@ -119,11 +119,33 @@ function handleDeleteCalendar(req, res, next){
 }
 
 function handleGetUsersWithEditPermissions(req, res, next){
-
+    let app = this;
+    calendar.getEditors(app.locals.db, req.body.id, (err, results) =>
+    {
+        if(err)
+        {
+            log.debug(err);
+        }
+        else
+        {
+            res.send(results);
+        }
+    });
 }
 
 function handleGetUsersWithViewPermissions(req, res, next){
-
+    let app = this;
+    calendar.getViewers(app.locals.db, req.body.id, (err, results) =>
+    {
+        if(err)
+        {
+            log.debug(err);
+        }
+        else
+        {
+            res.send(results);
+        }
+    });
 }
 
 function handleSearchUsers(req, res, next){
@@ -137,6 +159,51 @@ function handleSearchUsers(req, res, next){
         else
         {
             res.send(results);
+        }
+    });
+}
+
+function handleAddEditCalendarUser(req, res, next){
+    let app = this;
+    calendar.grantEditPrivileges(app.locals.db, res.locals.user.id, req.body.userID, req.body.calendarID, (result) =>{
+        if(result !== null)
+        {
+            log.debug(result);
+            res.send(result);
+        }
+        else
+        {
+            res.send("success");
+        }
+    });
+}
+
+function handleAddViewCalendarUser(req, res, next){
+    let app = this;
+    calendar.grantViewPrivileges(app.locals.db, res.locals.user.id, req.body.userID, req.body.calendarID, (result) =>{
+        if(result !== null)
+        {
+            log.debug(result);
+            res.send(result);
+        }
+        else
+        {
+            res.send("success");
+        }
+    });
+}
+
+function handleRemoveCalendarUserSharePermissions(req, res, next){
+    let app = this;
+    calendar.revokePrivileges(app.locals.db, res.locals.user.id, req.body.userID, req.body.calendarID, (result) =>{
+        if(result !== null)
+        {
+            log.debug(result);
+            res.send(result);
+        }
+        else
+        {
+            res.send("success");
         }
     });
 }
@@ -213,16 +280,23 @@ function handleRemoveEvent(req, res, next){
 function load(app) {
     app.get('/home', handleHomePage.bind(app));
     app.get('/', handleHomePage.bind(app));
+
     app.get('/getOwnCalendars', handleGetOwnCalendars.bind(app));
-    app.get('/getViewCalendars', handleGetEditCalendars.bind(app));
-    app.get('/getEditCalendars', handleGetViewCalendars.bind(app));
+    app.get('/getViewCalendars', handleGetViewCalendars.bind(app));
+    app.get('/getEditCalendars', handleGetEditCalendars.bind(app));
     app.post('/getEvents', handleGetEvents.bind(app));
+
     app.post('/addCalendar', handleAddCalendar.bind(app));
     app.post('/editCalendar', handleEditCalendar.bind(app));
     app.post('/deleteCalendar', handleDeleteCalendar.bind(app));
-    app.post('/editUsers', handleGetUsersWithEditPermissions.bind(app));
-    app.post('/viewUsers', handleGetUsersWithViewPermissions.bind(app));
+
+    app.post('/getCalendarEditUsers', handleGetUsersWithEditPermissions.bind(app));
+    app.post('/getCalendarViewUsers', handleGetUsersWithViewPermissions.bind(app));
     app.post('/searchUsers', handleSearchUsers.bind(app));
+    app.post('/shareCalendarAddEditUser', handleAddEditCalendarUser.bind(app));
+    app.post('/shareCalendarAddViewUser', handleAddViewCalendarUser.bind(app));
+    app.post('/removeUserAccessPermissions', handleRemoveCalendarUserSharePermissions.bind(app));
+
     app.post('/addEvent', handleAddEvent.bind(app));
     app.post('/editEvent', handleEditEvent.bind(app));
     app.post('/removeEvent', handleRemoveEvent.bind(app));
@@ -234,15 +308,22 @@ function load(app) {
 module.exports = {
     load: load,
     handleHomePage: handleHomePage,
+
     handleGetOwnedCalendars: handleGetOwnCalendars,
     handleGetEditCalendars: handleGetEditCalendars,
     handleGetViewCalendars: handleGetViewCalendars,
+
     handleAddCalendar: handleAddCalendar,
     handleEditCalendar: handleEditCalendar,
     handleDeleteCalendar: handleDeleteCalendar,
+
     handleGetUsersWithEditPermissions: handleGetUsersWithEditPermissions,
     handleGetUsersWithViewPermissions: handleGetUsersWithViewPermissions,
     handleSearchUsers: handleSearchUsers,
+    handleAddEditCalendarUser: handleAddEditCalendarUser,
+    handleAddViewCalendarUser: handleAddViewCalendarUser,
+    handleRemoveCalendarUserSharePermissions: handleRemoveCalendarUserSharePermissions,
+
     handleAddEvent: handleAddEvent,
     handleGetEvents: handleGetEvents,
     handleEditEvent: handleEditEvent,
