@@ -130,8 +130,15 @@ function userEditedCalendar(app, initiatingUser, calendarID) {
     });
 }
 
-function userDeletedCalendar(app, calendarID) {
-
+function userDeletedCalendar(app, initiatingUser, users, calendarID) {
+    for (let client of app.locals.clients) {
+        if (client.user.id !== initiatingUser && users.indexOf(client.user.id) !== -1) {
+            client.send({
+                type: 'DeletedCalendar',
+                calendarID: calendarID
+            });
+        }
+    }
 }
 
 function allowCalendarEdit(app, calendarID, userID) {

@@ -154,18 +154,20 @@ function handleEditCalendar(req, res, next){
 
 function handleDeleteCalendar(req, res, next){
     let app = this;
-    calendar.removeCalendar(app.locals.db, req.body.id, res.locals.user.id, (result) =>
-    {
-        if(result !== null)
+    calendar.getViewersAndEditors(app.locals.db, req.body.id, (err, users) => {
+        calendar.removeCalendar(app.locals.db, req.body.id, res.locals.user.id, (result) =>
         {
-            log.debug(result);
-            res.send(result);
-        }
-        else
-        {
-            ws.userDeletedCalendar(app, req.body.id);
-            res.send("success");
-        }
+            if(result !== null)
+            {
+                log.debug(result);
+                res.send(result);
+            }
+            else
+            {
+                ws.userDeletedCalendar(app, res.locals.user.id, users, req.body.id);
+                res.send("success");
+            }
+        });
     });
 }
 

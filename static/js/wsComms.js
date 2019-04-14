@@ -60,8 +60,15 @@ window.ws = window.ws || {};
                         type: 'Hello'
                     });
                     break;
+                case 'SelfAddCalendar':
+                    getOwnCalendars(() => {});
+                    break;
                 case 'RefreshCalendar':
                     getOwnCalendars(() => {});
+                    getEditCalendars(() => {});
+                    getViewCalendars(() => {});
+                    break;
+                case 'DeletedCalendar':
                     getEditCalendars(() => {});
                     getViewCalendars(() => {});
                     break;
