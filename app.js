@@ -19,12 +19,6 @@ const log = require(`${__rootname}/utils/log.js`);
 const route = require(`${__rootname}/utils/route.js`);
 const db = require(`${__rootname}/utils/db.js`);
 
-//TODO remove these once testing is finished
-const calendar = require(`${__rootname}/models/calendar.js`);
-const events = require(`${__rootname}/models/events.js`);
-const auth = require(`${__rootname}/utils/authentication.js`);
-const users = require(`${__rootname}/models/user.js`);
-
 
 function main()
 {
@@ -76,93 +70,6 @@ function main()
         app.use(errorHandler);
 
         app.listen(conf.port);
-
-        //TODO remove me once my purpose as an example is no more :(
-        //Adds some test stuff to the database. Make sure you reset your database via schema.sql, as
-        //This probably wont work otherwise!!!
-        auth.createUser(app.locals.db, "Isabel", "password", "testy@example.com", (err, id, uname) =>
-        {
-            if(err)
-            {
-                log.debug(err);
-            }
-            else
-            {
-                let testUserID = id;
-                let testUserName = uname;
-                calendar.addCalendar(app.locals.db, "New test calendar", testUserID, (err) =>
-                {
-                    if(err)
-                    {
-                        log.debug("An error occurred in test call of addCalendar");
-                        log.debug(err);
-                    }
-                    else
-                    {
-                        log.debug("Add Calendar called successfully");
-                        events.addEvent(app.locals.db, 2, testUserID, "Test Event", "2019-04-12 10:42:42", "2019-04-12 12:42:42", "Blah Blah Blah event description", (err) =>
-                        {
-                            if(err)
-                            {
-                                log.debug(err);
-                            }
-                            else
-                            {
-                                log.debug("Event Added Successfully");
-                                events.getEvents(app.locals.db, 2, testUserID, "2019-04-12 10:42:30", "2019-04-12 13:00:00", (err, result) =>
-                                {
-                                    if(err)
-                                    {
-                                        log.debug(err);
-                                    }
-                                    else
-                                    {
-                                        log.debug(result[0]);
-                                        calendar.getOwnedCalendars(app.locals.db, testUserID, (err, res) =>
-                                        {
-                                            if(err)
-                                            {
-                                                log.debug(err);
-                                            }
-                                            else if(res)
-                                            {
-                                                log.debug(res);
-                                                calendar.updateCalendar(app.locals.db, 2, testUserID, "HelloImANewCalendar", (err) =>
-                                                {
-                                                    if(err)
-                                                    {
-                                                        log.debug(err);
-                                                    }
-                                                    else
-                                                    {
-                                                        log.debug("Calendar has been updated");
-                                                        users.updateUserInfo(app.locals.db, testUserID, "Jeffrey", "Test", "test@testing.ca", (err) =>
-                                                        {
-                                                            if(err)
-                                                            {
-                                                                log.debug(err);
-                                                            }
-                                                            else
-                                                            {
-                                                                log.debug("user updated");
-                                                            }
-                                                        });
-                                                    }
-                                                })
-                                            }
-                                            else
-                                            {
-                                                log.debug("There are no owned calendars for user " + testUserID);
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-        });
     });
 }
 
