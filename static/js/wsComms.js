@@ -60,8 +60,27 @@ window.ws = window.ws || {};
                         type: 'Hello'
                     });
                     break;
+                case 'SelfAddCalendar':
+                    getOwnCalendars(() => {});
+                    break;
+                case 'RefreshCalendar':
+                    getOwnCalendars(() => {});
+                    getEditCalendars(() => {});
+                    getViewCalendars(() => {});
+                    break;
+                case 'DeletedCalendar': // falls through
+                case 'AddedPermission': // falls through
+                case 'RevokedPermission':
+                    getEditCalendars(() => {});
+                    getViewCalendars(() => {});
+                    break;
+                case 'AddedEvent': // falls through
+                case 'EditedEvent': // falls through
+                case 'DeletedEvent':
+                    getEvents(incoming.calendar, (events) => {});
+                    break;
                 default:
-                    log.warn(`Unknown message type ${self.connectionID}`, message.data);
+                    self.log.warn(`Unknown message type ${self.connectionID}`, message.data);
                     break;
             }
         };
