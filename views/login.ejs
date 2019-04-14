@@ -39,16 +39,20 @@
                 </div>
             
                 <div class="container">
-                <button type="button" class="btn btn-secondary" type="submit" data-toggle="modal" data-target="#registerModal">Register</button>
+                
                 </div>
     </form>
+    <div>
+        <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#registerModal">Register</button>
+
+    </div>
         
     <!-- Register Modal-->
     <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModal" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Create Event</h5>
+                        <h5 class="modal-title">Register</h5>
                         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
@@ -75,7 +79,7 @@
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                        <button id="registerModalButton" class="btn btn-primary" type="submit" onclick="handleTODO();return false;">Register</button>
+                        <button id="registerModalButton" class="btn btn-primary" onclick="handleRegisterUserClick();return false;">Register</button>
                     </div>
                 </div>
             </div>
@@ -90,6 +94,9 @@
 
     <!-- Custom scripts for all pages-->
     <script src="/startbootstrap-sb-admin-gh-pages/js/sb-admin.min.js"></script>
+    <script src="/datepicker/jquery-ui.min.js"></script>
+    <script src="/js/mainCalendarPage.js"></script>
+    <script src="/js/wsComms.js"></script>
 
     </body>
 </html>

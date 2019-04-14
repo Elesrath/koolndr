@@ -7,6 +7,8 @@ const event = require(`${__rootname}/models/events.js`);
 const user = require(`${__rootname}/models/user.js`);
 const log = require(`${__rootname}/utils/log.js`);
 
+const auth = require(`${__rootname}/utils/authentication.js`);
+
  /**
   * Handle a GET to the login page
   * @function handleLoginPage
@@ -22,6 +24,29 @@ function handleHomePage(req, res, next) {
         app: app,
         req: req,
         res: res
+    });
+}
+
+
+//function createUser(db, username, password, email, cb) {
+
+
+function handleRegisterUser(req,res,next){
+
+    let app = this;
+
+    auth.createUser(app.locals.db,req.body.username,req.body.password,req.body.email, (result) =>
+    {
+        if(result[0] !== null)
+        {
+            log.debug(result);
+            res.send(result);
+        }
+        else
+        {
+            log.debug("registered user: "+req.body.username);
+            res.send("success");
+        }
     });
 }
 
@@ -350,6 +375,8 @@ function load(app) {
 
     app.post('/changeUserType', handleChangeUserType.bind(app));
     app.post('/changeUserInfo', handleChangeUserInfo.bind(app));
+
+    app.post('/registerUser', handleRegisterUser.bind(app))
 }
 
 /**
@@ -381,4 +408,6 @@ module.exports = {
 
     handleChangeUserType: handleChangeUserType,
     handleChangeUserInfo: handleChangeUserInfo,
+
+    handleRegisterUser:handleRegisterUser,
 };

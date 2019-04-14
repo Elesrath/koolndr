@@ -12,6 +12,34 @@ let eventlist = [];
 //         cb(result);
 //     });
 // }
+function registerUser(registerUsername, registerPassword, registerEmail, cb) {
+    console.log(registerUsername);
+    $.post("/changeUserType", { username: registerUsername, password: registerPassword, email: registerEmail }, function (result) {
+        console.log(result);
+        cb(result);
+    });
+}
+
+
+function handleRegisterUserClick() {
+    let registerUsername = $.trim($('#usernameInput').val());
+    let registerPassword = $.trim($('#passwordInput').val());
+
+    let registerPassword2 = $.trim($('#repasswordInput').val());
+    let registerEmail = $.trim($('#emailInput').val());
+    if (registerPassword !== registerPassword2) {
+        alert("Submitted passwords don't match!");
+        return false;
+    }
+    registerUser(registerUsername, registerPassword, registerEmail, function (result) {
+        if (result === "success") {
+            $('#registerModal').modal('hide');
+        }
+        else {
+            alert("Registration failed: " + result);
+        }
+    });
+}
 
 function handleUpdateUser() {
     let pass1 = $.trim($('#passwordInput1').val());
@@ -65,6 +93,7 @@ function handleChangeUserTypeClick() {
         }
     });
 }
+
 
 
 function addCalendar(calendarName, cb) {
