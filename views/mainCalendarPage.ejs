@@ -16,7 +16,8 @@
         <link href="/startbootstrap-sb-admin-gh-pages/css/sb-admin.css" rel="stylesheet">
         <link href='/fullcalendar/core/main.css' rel='stylesheet' />
         <link href='/fullcalendar/daygrid/main.css' rel='stylesheet' />
-        <link href='fullcalendar/bootstrap/main.css' rel='stylesheet' />
+        <link href='/fullcalendar/bootstrap/main.css' rel='stylesheet' />
+        <link href='/datepicker/jquery-ui.css' rel='stylesheet' />
         <link rel="stylesheet" type="text/css" href="/css/mainCalendarPage.css">
 
         <script src='/fullcalendar/core/main.js'></script>
@@ -310,15 +311,15 @@
                             <label for="eventNameInput">Event Name</label>
                         </div>
                         <div class="form-label-group">
-                            <input type="date" id="eventStartDate" class="form-control" required="required">
+                            <input id="eventStartDate" class="form-control" required="required">
                             <label for="eventStartDate">Start Date</label>
                         </div>
                         <div class="form-label-group">
-                            <input type="date" id="eventEndDate" class="form-control" required="required">
+                            <input id="eventEndDate" class="form-control" required="required">
                             <label for="eventEndDate">End Date</label>
                         </div>
                         <div class="form-label-group">
-                            <input id="eventDescription" class="form-control" maxlength="60" required="required">
+                            <input id="eventDescription" class="form-control" maxlength="200" required="required">
                             <label for="eventDescription">Event Description</label>
                         </div>
                     </form>
@@ -348,15 +349,15 @@
                                 <label for="eventNewName">Event Name</label>
                             </div>
                             <div class="form-label-group">
-                                <input type="date" id="eventNewStart" class="form-control" required="required">
+                                <input id="eventNewStart" class="form-control" required="required">
                                 <label for="eventNewStart">Start Date</label>
                             </div>
                             <div class="form-label-group">
-                                <input type="date" id="eventNewEnd" class="form-control" required="required">
+                                <input id="eventNewEnd" class="form-control" required="required">
                                 <label for="eventNewEnd">End Date</label>
                             </div>
                             <div class="form-label-group">
-                                <input id="eventNewDescription" class="form-control" maxlength="60" required="required">
+                                <input id="eventNewDescription" class="form-control" maxlength="200" required="required">
                                 <label for="eventNewDescription">Event Description</label>
                             </div>
                         </form>
@@ -379,6 +380,7 @@
 
     <!-- Custom scripts for all pages-->
     <script src="/startbootstrap-sb-admin-gh-pages/js/sb-admin.min.js"></script>
+    <script src="/datepicker/jquery-ui.min.js"></script>
     <script src="/js/mainCalendarPage.js"></script>
     <script src="/js/wsComms.js"></script>
 
