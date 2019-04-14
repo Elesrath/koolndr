@@ -2,6 +2,9 @@
  * User data
  */
 
+const bcrypt = require('bcrypt');
+
+const conf = require(`${__rootname}/conf.json`);
 const log = require(`${__rootname}/utils/log.js`);
 
 /**
@@ -138,21 +141,37 @@ function changeUserType(db, userID, newType, cb)
  */
 function updateUserInfo(db, userID, newName, newPassword, newEmail, cb)
 {
-    db.query(
-        `UPDATE users
-        SET username = ?, password = ?, email = ?
-        WHERE uuid = ?`,
-        [newName, newPassword, newEmail, userID], (err) =>
-        {
-            if (err)
-            {
-                cb(err.sqlMessage);
+    bcrypt.genSalt(conf.encryption.rounds, (err, salt) => {
+        if (err) {
+            cb(err);
+            return;
+        }
+
+        bcrypt.hash(newPassword, salt, (err, hash) => {
+            if (err) {
+                cb(err);
+                return;
             }
-            else
-            {
-                cb(null);
-            }
+
+
+            db.query(
+                `UPDATE users
+                SET username = ?, password = ?, email = ?
+                WHERE uuid = ?`,
+                [newName.toLowerCase(), hash, newEmail, userID], (err) =>
+                {
+                    if (err)
+                    {
+                        cb(err.sqlMessage);
+                    }
+                    else
+                    {
+                        cb(null);
+                    }
+                }
+            );
         });
+    });    
 }
 
 /**
