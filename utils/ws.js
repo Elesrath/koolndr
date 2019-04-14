@@ -142,27 +142,69 @@ function userDeletedCalendar(app, initiatingUser, users, calendarID) {
 }
 
 function allowCalendarEdit(app, calendarID, userID) {
-
+    for (let client of app.locals.clients) {
+        if (client.user.id === userID) {
+            client.send({
+                type: 'AddedPermission',
+                calendar: calendarID
+            });
+        }
+    }
 }
 
 function allowCalendarView(app, calendarID, userID) {
-
+    for (let client of app.locals.clients) {
+        if (client.user.id === userID) {
+            client.send({
+                type: 'AddedPermission',
+                calendar: calendarID
+            });
+        }
+    }
 }
 
 function revokePerms(app, calendarID, userID) {
-
+    for (let client of app.locals.clients) {
+        if (client.user.id === userID) {
+            client.send({
+                type: 'RevokedPermission',
+                calendar: calendarID
+            });
+        }
+    }
 }
 
-function userAddedEvent(app, calendarID) {
-
+function userAddedEvent(app, initiatingUser, calendarID) {
+    for (let client of app.locals.clients) {
+        if (client.user.id !== initiatingUser) {
+            client.send({
+                type: 'AddedEvent',
+                calendar: calendarID
+            });
+        }
+    }
 }
 
-function userEditedEvent(app, calendarID) {
-
+function userEditedEvent(app, initiatingUser, calendarID) {
+    for (let client of app.locals.clients) {
+        if (client.user.id !== initiatingUser) {
+            client.send({
+                type: 'EditedEvent',
+                calendar: calendarID
+            });
+        }
+    }
 }
 
-function userDeletedEvent(app, calendarID) {
-
+function userDeletedEvent(app, initiatingUser, calendarID) {
+    for (let client of app.locals.clients) {
+        if (client.user.id !== initiatingUser) {
+            client.send({
+                type: 'DeletedEvent',
+                calendar: calendarID
+            });
+        }
+    }
 }
 
 
@@ -175,6 +217,7 @@ module.exports = {
     userEditedCalendar: userEditedCalendar,
     userDeletedCalendar: userDeletedCalendar,
     allowCalendarEdit: allowCalendarEdit,
+    allowCalendarView: allowCalendarView,
     revokePerms: revokePerms,
     userAddedEvent: userAddedEvent,
     userEditedEvent: userEditedEvent,

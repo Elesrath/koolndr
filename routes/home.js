@@ -275,7 +275,7 @@ function handleAddEvent(req, res, next){
         }
         else
         {
-            ws.userAddedEvent(app, req.body.calendarID);
+            ws.userAddedEvent(app, res.locals.user.id, req.body.calendarID);
             res.send("success");
         }
     });
@@ -307,7 +307,7 @@ function handleEditEvent(req, res, next){
         }
         else
         {
-            ws.userEditedEvent(app, req.body.calendarID);
+            ws.userEditedEvent(app, res.locals.user.id, req.body.calendarID);
             res.send("success");
         }
     });
@@ -324,7 +324,7 @@ function handleRemoveEvent(req, res, next){
         }
         else
         {
-            ws.userDeletedEvent(app, req.body.calendarID);
+            ws.userDeletedEvent(app, res.locals.user.id, req.body.calendarID);
             res.send("success");
         }
     });

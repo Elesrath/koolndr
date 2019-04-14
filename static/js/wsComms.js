@@ -72,6 +72,19 @@ window.ws = window.ws || {};
                     getEditCalendars(() => {});
                     getViewCalendars(() => {});
                     break;
+                case 'AddedPermission':
+                    getEditCalendars(() => {});
+                    getViewCalendars(() => {});
+                    break;
+                case 'RevokedPermission':
+                    getEditCalendars(() => {});
+                    getViewCalendars(() => {});
+                    break;
+                case 'AddedEvent':
+                case 'EditedEvent':
+                case 'DeletedEvent':
+                    getEvents(incoming.calendar, (events) => {});
+                    break;
                 default:
                     self.log.warn(`Unknown message type ${self.connectionID}`, message.data);
                     break;
