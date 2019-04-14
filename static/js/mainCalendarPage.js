@@ -442,6 +442,7 @@ function pad(number) {
 }
 
 $(document).ready(function() {
+    $('[data-toggle="tooltip"]').tooltip();
     userType = $("input[name='user-userType']").val();
     $('#eventStartDate').datepicker({dateFormat: "yy-mm-dd"});
     $('#eventEndDate').datepicker({dateFormat: "yy-mm-dd"});
@@ -494,6 +495,7 @@ $(document).ready(function() {
         eventLimit: 4,
         selectable: false,
         allDayDefault: true,
+        eventBackgroundColor: '#02c5f2',
         select: function(selectionInfo) {
             /*
             let starting = selectionInfo.start;
@@ -537,6 +539,8 @@ $(document).ready(function() {
             $("#editEventModal").modal('show');
             $("#eventNewStart").val(starting_str);
             $("#eventNewEnd").val(ending_str);
+            $('#eventNewName').val(selectedEvent.title);
+            $('#eventNewDescription').val(selectedEvent.extendedProps.description);
         },
         eventDrop: function(info) {
 
@@ -567,9 +571,17 @@ $(document).ready(function() {
                 }
             });
         },
-        eventRender: function(info, el) {
-            let desc = info.event.extendedProps.description;
-            info.el.insertAdjacentHTML('beforeend', desc);
+        eventRender: function(info) {
+            $(info.el).popover({
+                title: info.event.title,
+                content: info.event.extendedProps.description,
+                trigger: 'hover',
+                placement: 'top',
+                container: 'body'
+            });
+            //$(info.el).tooltip({title: info.event.extendedProps.description});
+            //let desc = info.event.extendedProps.description;
+            //info.el.insertAdjacentHTML('beforeend', desc);
         },
     });
 

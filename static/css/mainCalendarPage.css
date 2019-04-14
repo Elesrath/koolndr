@@ -8,6 +8,11 @@
     background-color: #0087A6;
 }
 
+
+.popover-header {background-color: tomato;}
+.popover-body{background-color: black; color: white;}
+
+
 @media (max-width: 768px){
     .fc-header-toolbar {
         display: flex;
