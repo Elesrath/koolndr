@@ -31,8 +31,8 @@ function getOwnCalendars(cb){
         let own = $("#calendarsOwn");
         own.empty();
         for(let i = 0; i < calendars.length; i++){
-            own.append('<a class="nav-link custom-link" href="#" id=' + calendars[i].name +'_'+ calendars[i].calendarID +
-                ' data-ctype="own" data-cid='+ calendars[i].calendarID + ' data-cname='+ calendars[i].name +
+            own.append('<a class="nav-link custom-link" href="#" id=' + 'ownCalendar' + calendars[i].calendarID +
+                ' data-ctype="own" data-cid='+ calendars[i].calendarID +
                 ' onclick="handleCalendarNavClick(this.id);return false;">' +
                 '<i class="fas fa-fw fa-calendar-alt"></i><span> ' + calendars[i].name + '</span></a>');
         }
@@ -45,8 +45,8 @@ function getEditCalendars(){
         let edit = $("#calendarsEdit");
         edit.empty();
         for(let i = 0; i < calendars.length; i++){
-            edit.append('<a class="nav-link custom-link" href="#" id=' + calendars[i].name +'_'+ calendars[i].calendarID +
-                ' data-ctype="edit" data-cid='+ calendars[i].calendarID + ' data-cname='+ calendars[i].name +
+            edit.append('<a class="nav-link custom-link" href="#" id=' + 'editCalendar' + calendars[i].calendarID +
+                ' data-ctype="edit" data-cid='+ calendars[i].calendarID +
                 ' onclick="handleCalendarNavClick(this.id);return false;">' +
                 '<i class="fas fa-fw fa-calendar-alt"></i><span> ' + calendars[i].name + '</span></a>');
         }
@@ -58,8 +58,8 @@ function getViewCalendars(){
         let view = $("#calendarsView");
         view.empty();
         for(let i = 0; i < calendars.length; i++){
-            view.append('<a class="nav-link custom-link" href="#" id=' + calendars[i].name +'_'+ calendars[i].calendarID +
-                ' data-ctype="view" data-cid='+ calendars[i].calendarID + ' data-cname='+ calendars[i].name +
+            view.append('<a class="nav-link custom-link" href="#" id=' + 'viewCalendar' + calendars[i].calendarID +
+                ' data-ctype="view" data-cid='+ calendars[i].calendarID +
                 ' onclick="handleCalendarNavClick(this.id);return false;">' +
                 '<i class="fas fa-fw fa-calendar-alt"></i><span> ' + calendars[i].name + '</span></a>');
         }
@@ -128,9 +128,10 @@ function handleCalendarNavClick(id) {
 
     $(".sidebar-selected").removeClass("sidebar-selected");
     document.getElementById(id).classList.add("sidebar-selected");
+
     let selectedCalendar = $('#'+id);
     selectedCalendarID = selectedCalendar.attr("data-cid");
-    selectedCalendarName = selectedCalendar.attr("data-cname");
+    selectedCalendarName = $('#' + id + ' > span').text();
     selectedCalendarType = selectedCalendar.attr("data-ctype");
 
     getEvents(id, function(results){});
