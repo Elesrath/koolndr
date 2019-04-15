@@ -189,6 +189,7 @@ function handleCalendarNavClick(id) {
 
     if (selectedCalendarType === "own") {
         calendar.setOption('selectable', true);
+        calendar.setOption('editable', true);
         calendar.setOption('header', {
             left: 'editButton, shareButton, deleteButton',
             center: 'title',
@@ -197,6 +198,7 @@ function handleCalendarNavClick(id) {
     }
     else if (selectedCalendarType === "edit") {
         calendar.setOption('selectable', true);
+        calendar.setOption('editable', true);
         calendar.setOption('header', {
             left: 'shareButton',
             center: 'title',
@@ -205,6 +207,7 @@ function handleCalendarNavClick(id) {
     }
     else {
         calendar.setOption('selectable', false);
+        calendar.setOption('editable', false);
         calendar.setOption('header', {
             left: '',
             center: 'title',
@@ -524,7 +527,7 @@ $(document).ready(function() {
             center: 'title',
             right: 'today, prev,next',
         },
-        editable: true,
+        editable: false,
         eventLimit: 4,
         selectable: false,
         allDayDefault: true,
