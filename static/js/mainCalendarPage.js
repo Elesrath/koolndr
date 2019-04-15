@@ -188,6 +188,7 @@ function handleCalendarNavClick(id) {
     getEvents(selectedCalendarID, function (results) { });
 
     if (selectedCalendarType === "own") {
+        calendar.setOption('selectable', true);
         calendar.setOption('header', {
             left: 'editButton, shareButton, deleteButton',
             center: 'title',
@@ -195,6 +196,7 @@ function handleCalendarNavClick(id) {
         });
     }
     else if (selectedCalendarType === "edit") {
+        calendar.setOption('selectable', true);
         calendar.setOption('header', {
             left: 'shareButton',
             center: 'title',
@@ -202,13 +204,13 @@ function handleCalendarNavClick(id) {
         });
     }
     else {
+        calendar.setOption('selectable', false);
         calendar.setOption('header', {
             left: '',
             center: 'title',
             right: 'today, prev,next',
         });
     }
-    calendar.setOption('selectable', true);
 }
 
 function handleAddNewCalendarClick() {
@@ -307,13 +309,11 @@ function handleAddUserEditPermissionsClick() {
     });
 }
 
-
-
 function handleAddUserViewPermissionsClick() {
     addUserViewPermissions(selectedShareRecipientUserID, function (result) {
         if (result === "success") {
             getViewPermissionUsers();
-            getEditCalendars();
+            getEditPermissionUsers();
         }
         else {
             alert("Add view permission failed: " + result);
@@ -474,6 +474,7 @@ function pad(number) {
 }
 
 $(document).ready(function() {
+    $('#welcomeToast').toast('show');
     $('[data-toggle="tooltip"]').tooltip();
     userType = $("input[name='user-userType']").val();
     $('#eventStartDate').datepicker({ dateFormat: "yy-mm-dd" });
@@ -547,32 +548,34 @@ $(document).ready(function() {
             $("#eventEndDate").val(selectionInfo.startStr);
         },
         eventClick: function (info) {
-            selectedEvent = info.event;
+            if(selectedCalendarType !== "view") {
+                selectedEvent = info.event;
 
-            info.jsEvent.preventDefault();                      // don't let the browser navigate by default
+                info.jsEvent.preventDefault();                      // don't let the browser navigate by default
 
-            let starting = selectedEvent.start;
-            let ending;
-            if (selectedEvent.end) {
-                ending = selectedEvent.end;
-            } else {
-                ending = selectedEvent.start;
+                let starting = selectedEvent.start;
+                let ending;
+                if (selectedEvent.end) {
+                    ending = selectedEvent.end;
+                } else {
+                    ending = selectedEvent.start;
+                }
+
+                let starting_str = starting.getUTCFullYear() +
+                    '-' + pad(starting.getUTCMonth() + 1) +
+                    '-' + pad(starting.getUTCDate());
+
+                let ending_str = ending.getUTCFullYear() +
+                    '-' + pad(ending.getUTCMonth() + 1) +
+                    '-' + pad(ending.getUTCDate());
+
+                $("#editEventModalTitle").text("Edit Event: " + selectedEvent.title);
+                $("#editEventModal").modal('show');
+                $("#eventNewStart").val(starting_str);
+                $("#eventNewEnd").val(ending_str);
+                $('#eventNewName').val(selectedEvent.title);
+                $('#eventNewDescription').val(selectedEvent.extendedProps.description);
             }
-
-            let starting_str = starting.getUTCFullYear() +
-                '-' + pad(starting.getUTCMonth() + 1) +
-                '-' + pad(starting.getUTCDate());
-
-            let ending_str = ending.getUTCFullYear() +
-                '-' + pad(ending.getUTCMonth() + 1) +
-                '-' + pad(ending.getUTCDate());
-
-            $("#editEventModalTitle").text("Edit Event: " + selectedEvent.title);
-            $("#editEventModal").modal('show');
-            $("#eventNewStart").val(starting_str);
-            $("#eventNewEnd").val(ending_str);
-            $('#eventNewName').val(selectedEvent.title);
-            $('#eventNewDescription').val(selectedEvent.extendedProps.description);
         },
         eventDrop: function (info) {
 
