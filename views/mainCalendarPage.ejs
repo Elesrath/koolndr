@@ -31,7 +31,7 @@
     <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
         <img src="/images/logo.png" height="4%" width="4%" style="margin-right: 1%" />
 
-        <a class="navbar-brand mr-1" href="index.html">My Calendars</a>
+        <a class="navbar-brand mr-1" href="home">My Calendars</a>
 
         <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
             <i class="fas fa-bars"></i>
@@ -50,7 +50,6 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
                     <a class="dropdown-item" href="#" data-toggle="modal" data-target="#myAccountModal">My Account</a>
-                    <a class="dropdown-item" href="#">My Calendars</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
                 </div>
@@ -84,6 +83,8 @@
 
         <div id="content-wrapper">
             <div class="container-fluid">
+                <%- include('common/userData.ejs', {user: res.locals.user}); %>
+
                 <!-- Calendar -->
                 <div id='calendar'></div>
             </div>
@@ -130,7 +131,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Update Account Modal-->
     <div class="modal fade" id="updateAccountModal" tabindex="-1" role="dialog" aria-labelledby="updateAccountModal" aria-hidden="true">
         <div class="modal-dialog" role="document">

@@ -219,7 +219,10 @@ function handleAddNewCalendarClick() {
     }
     addCalendar(calendarName, function (result) {
         if (result === "success") {
-            getOwnCalendars();
+            getOwnCalendars(function(){
+                $(".sidebar-selected").removeClass("sidebar-selected");
+                document.getElementById("ownCalendar"+selectedCalendarID).classList.add("sidebar-selected");
+            });
             $('#addNewCalendarNameInput').val('');
             $('#addNewCalendarModal').modal('hide');
         }
@@ -296,6 +299,7 @@ function handleAddUserEditPermissionsClick() {
     addUserEditPermissions(selectedShareRecipientUserID, function (result) {
         if (result === "success") {
             getEditPermissionUsers();
+            getViewPermissionUsers();
         }
         else {
             alert("Add edit permission failed: " + result);
@@ -309,6 +313,7 @@ function handleAddUserViewPermissionsClick() {
     addUserViewPermissions(selectedShareRecipientUserID, function (result) {
         if (result === "success") {
             getViewPermissionUsers();
+            getEditCalendars();
         }
         else {
             alert("Add view permission failed: " + result);
